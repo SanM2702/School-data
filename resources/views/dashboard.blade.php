@@ -7,7 +7,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ route('dashboard') }}">
-            <i class="fas fa-file-invoice-dollar me-2"></i>CuentasCobro
+            <i class="fas fa-file-invoice-dollar me-2"></i>Colegio
         </a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -46,6 +46,10 @@
 </nav>
 
 <div class="container-fluid">
+    @php
+        $usuario = Auth::user();
+        $rol = App\Models\RolesModel::find($usuario->roles_id);
+    @endphp
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 p-0">
@@ -57,21 +61,68 @@
                     <a class="nav-link active" href="{{ route('dashboard') }}">
                         <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                     </a>
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-file-invoice me-2"></i>Cuentas de Cobro
-                    </a>
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-plus-circle me-2"></i>Nueva Cuenta
-                    </a>
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-users me-2"></i>Clientes
-                    </a>
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-chart-bar me-2"></i>Reportes
-                    </a>
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-cog me-2"></i>Configuración
-                    </a>
+                    @if($rol)
+                        @if($rol->tienePermiso('gestionar_usuarios'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_estudiantes'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-user-graduate me-2"></i>Estudiantes
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_docentes'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>Docentes
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_roles'))
+                            <a class="nav-link" href="{{ route('roles.index') }}">
+                                <i class="fas fa-user-shield me-2"></i>Roles y Permisos
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('matricular_estudiantes'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-user-check me-2"></i>Matricular Estudiantes
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_materias'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-book-open me-2"></i>Materias
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_cursos'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-layer-group me-2"></i>Cursos
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_horarios'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-calendar-alt me-2"></i>Horarios
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_disciplina'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-gavel me-2"></i>Disciplina
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('ver_reportes_generales'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-chart-bar me-2"></i>Reportes
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_pagos'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-money-bill-wave me-2"></i>Pagos
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('configurar_sistema'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-cog me-2"></i>Configuración
+                            </a>
+                        @endif
+                    @endif
                 </nav>
             </div>
         </div>
@@ -83,7 +134,7 @@
                 <div class="row mb-4">
                     <div class="col-12">
                         <h1 class="h3 text-dark">¡Bienvenido, {{ Auth::user()->name }}!</h1>
-                        <p class="text-muted">Gestiona tus cuentas de cobro de manera eficiente</p>
+                        <p class="text-muted">Gestiona tus Colegio de manera eficiente</p>
                     </div>
                 </div>
 
@@ -153,24 +204,30 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
+                                    @if($rol && $rol->tienePermiso('gestionar_estudiantes'))
                                     <div class="col-md-4 mb-3">
                                         <a href="#" class="btn btn-primary btn-lg w-100">
-                                            <i class="fas fa-plus-circle me-2"></i>
-                                            Nueva Cuenta de Cobro
+                                            <i class="fas fa-user-plus me-2"></i>
+                                            Nuevo Estudiante
                                         </a>
                                     </div>
+                                    @endif
+                                    @if($rol && $rol->tienePermiso('gestionar_docentes'))
                                     <div class="col-md-4 mb-3">
                                         <a href="#" class="btn btn-outline-primary btn-lg w-100">
-                                            <i class="fas fa-user-plus me-2"></i>
-                                            Agregar Cliente
+                                            <i class="fas fa-chalkboard-teacher me-2"></i>
+                                            Nuevo Docente
                                         </a>
                                     </div>
+                                    @endif
+                                    @if($rol && $rol->tienePermiso('ver_reportes_generales'))
                                     <div class="col-md-4 mb-3">
                                         <a href="#" class="btn btn-outline-primary btn-lg w-100">
                                             <i class="fas fa-chart-line me-2"></i>
                                             Ver Reportes
                                         </a>
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

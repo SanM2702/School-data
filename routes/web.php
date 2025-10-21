@@ -21,4 +21,7 @@ Route::post('/register', [CrearUsuario::class, 'register']);
 // Rutas protegidas por autenticación
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    // Roles management
+    Route::get('/roles/create', [\App\Http\Controllers\RolesController::class, 'create'])->name('roles.create');
+    Route::post('/roles', [\App\Http\Controllers\RolesController::class, 'store'])->name('roles.store');
 });
