@@ -27,6 +27,8 @@ Route::middleware(['auth'])->group(function () {
     // Rutas de estudiantes
     Route::get('/estudiantes', [App\Http\Controllers\EstudianteController::class, 'index'])->name('estudiantes.index');
     Route::get('/estudiantes/nuevo', [App\Http\Controllers\EstudianteController::class, 'nuevo'])->name('estudiantes.nuevo');
+    Route::get('/estudiantes/{idEstudiante}', [App\Http\Controllers\EstudianteController::class, 'mostrar'])->name('estudiantes.mostrar');
+    Route::get('/estudiantes/{idEstudiante}/editar', [App\Http\Controllers\EstudianteController::class, 'editar'])->name('estudiantes.editar');
     Route::post('/estudiantes', [App\Http\Controllers\EstudianteController::class, 'store'])->name('estudiantes.store');
     Route::post('/estudiantes/documento/{noDocumento}/acudiente', [App\Http\Controllers\EstudianteController::class, 'storeAcudiente'])->name('estudiantes.acudientes.store');
     Route::post('/estudiantes/documento/{noDocumento}/matricula', [App\Http\Controllers\EstudianteController::class, 'storeMatricula'])->name('estudiantes.matricula.store');

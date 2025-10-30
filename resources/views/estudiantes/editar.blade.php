@@ -130,52 +130,6 @@
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
                 <h1 class="mb-4">Estudiantes</h1>
-                @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-                @if(session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
-                <a href="{{ route('estudiantes.nuevo') }}" class="btn btn-primary mb-3">Nuevo estudiante</a>
-                @if($estudiantes->isEmpty())
-                    <p>No hay estudiantes registrados.</p>
-                @else
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Nombre</th>
-                                <th>Documento</th>
-                                <th>Fecha de ingreso</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($estudiantes as $estudiante)
-                                <tr>
-                                    <td>{{ $estudiante->idEstudiante }}</td>
-                                    <td>
-                                        @if($estudiante->persona)
-                                            {{ $estudiante->persona->primerNombre }} {{ $estudiante->persona->segundoNombre }} {{ $estudiante->persona->primerApellido }} {{ $estudiante->persona->segundoApellido }}
-                                        @else
-                                            (Persona no asociada)
-                                        @endif
-                                    </td>
-                                    <td>{{ optional($estudiante->persona)->noDocumento }}</td>
-                                    <td>{{ $estudiante->fechaIngreso ?? '-' }}</td>
-                                    <td>
-                                        <a href="{{ route('estudiantes.mostrar', $estudiante->idEstudiante) }}" class="btn btn-info btn-sm" title="Ver" aria-label="Ver">
-                                            <i class="fas fa-magnifying-glass"></i>
-                                        </a>
-                                        <a href="{{ route('estudiantes.editar', $estudiante->idEstudiante) }}" class="btn btn-warning btn-sm" title="Editar" aria-label="Editar">
-                                            <i class="fas fa-pen"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
             </div>
         </div>
     </div>

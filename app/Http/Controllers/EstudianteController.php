@@ -31,6 +31,18 @@ class EstudianteController extends Controller
         return view('estudiantes.nuevo');
     }
 
+    public function mostrar($idEstudiante)
+    {
+        $estudiante = Estudiante::with('persona')->findOrFail($idEstudiante);
+        return view('estudiantes.mostrar', compact('estudiante'));
+    }
+
+    public function editar($idEstudiante)
+    {
+        $estudiante = Estudiante::with('persona')->findOrFail($idEstudiante);
+        return view('estudiantes.editar', compact('estudiante'));
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
