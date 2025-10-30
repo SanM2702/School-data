@@ -69,7 +69,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_estudiantes'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('estudiantes.index') }}">
                                 <i class="fas fa-user-graduate me-2"></i>Estudiantes
                             </a>
                         @endif
@@ -154,12 +154,18 @@
                                 <td>{{ $rol->descripcion }}</td>
                                 <td>{{ $rol->usuarios_count }}</td>
                                 <td>
-                                    <a href="{{ route('roles.mostrar', $rol->id) }}" class="btn btn-info btn-sm">Ver</a>
-                                    <a href="{{ route('roles.editar', $rol->id) }}" class="btn btn-warning btn-sm">Editar</a>
+                                    <a href="{{ route('roles.mostrar', $rol->id) }}" class="btn btn-info btn-sm" title="Ver" aria-label="Ver">
+                                        <i class="fas fa-magnifying-glass"></i>
+                                    </a>
+                                    <a href="{{ route('roles.editar', $rol->id) }}" class="btn btn-warning btn-sm" title="Editar" aria-label="Editar">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
                                     <form action="{{ route('roles.eliminar', $rol->id) }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar este rol?')">Eliminar</button>
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Eliminar" aria-label="Eliminar" onclick="return confirm('¿Seguro que deseas eliminar este rol?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </form>
                                 </td>
                             </tr>

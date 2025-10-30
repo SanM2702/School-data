@@ -3,7 +3,7 @@
 @section('title', 'Iniciar Sesión - CuentasCobro')
 
 @section('content')
-<div class="login-container d-flex align-items-center justify-content-center">
+<div class="login-container d-flex align-items-center justify-content-center" style="min-height: 100vh; background: url('{{ asset('images/Background-Colegio.jpg') }}') center center / cover no-repeat fixed;">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
