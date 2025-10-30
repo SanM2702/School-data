@@ -129,7 +129,94 @@
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
-                <h1 class="mb-4">Estudiantes</h1>
+                <h1 class="mb-4">
+                    {{ $estudiante->persona->primerNombre }} {{ $estudiante->persona->segundoNombre }} {{ $estudiante->persona->primerApellido }} {{ $estudiante->persona->segundoApellido }}
+                </h1>
+
+                <div class="row g-4 align-items-stretch">
+                    <div class="col-md-4 d-flex flex-column">
+                        <div class="border rounded bg-white w-100 flex-grow-1 d-flex justify-content-center align-items-center">
+                            <div class="d-flex justify-content-center align-items-center" style="height: 100%; aspect-ratio: 3 / 4; overflow: hidden;">
+                                <span class="text-muted">Sin imagen</span>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a href="#" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-image me-1"></i> Editar imagen
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-8 d-flex">
+                        <div class="card w-100 h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">Información del Estudiante</h5>
+                                <form method="POST" action="{{ url('estudiantes/'.$estudiante->idEstudiante.'/contacto') }}">
+                                    @csrf
+                                    <div class="row gy-3">
+                                        <div class="col-sm-6">
+                                            <label class="form-label">Documento</label>
+                                            <input type="text" class="form-control" value="{{ $estudiante->persona->noDocumento }}" disabled>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label class="form-label">Fecha de Nacimiento</label>
+                                            <input type="text" class="form-control" value="{{ $estudiante->persona->fechaNacimiento }}" disabled>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label class="form-label">Teléfono</label>
+                                            <input type="text" name="telefono" class="form-control" value="{{ $estudiante->persona->telefono }}">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" name="email" class="form-control" value="{{ $estudiante->persona->email }}">
+                                            <div class="form-text">Nota: No cambiara su correo de inicio de sesion</div>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h1 class="my-4">Acudiente</h1>
+                <div class="card">
+                    <div class="card-body">
+                        @if(!empty($acudiente))
+                            <h5 class="card-title mb-3">
+                                {{ $acudiente->primerNombre }} {{ $acudiente->segundoNombre }} {{ $acudiente->primerApellido }} {{ $acudiente->segundoApellido }}
+                            </h5>
+                            <form method="POST" action="{{ url('estudiantes/'.$estudiante->idEstudiante.'/acudiente/contacto') }}">
+                                @csrf
+                                <div class="row gy-3">
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Parentesco</label>
+                                        <input type="text" class="form-control" value="{{ $acudiente->parentesco }}" disabled>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Documento</label>
+                                        <input type="text" class="form-control" value="{{ $acudiente->noDocumento }}" disabled>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Teléfono</label>
+                                        <input type="text" name="telefono" class="form-control" value="{{ $acudiente->telefono }}">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" name="email" class="form-control" value="{{ $acudiente->email }}">
+                                        <div class="form-text">Nota: No cambiara su correo de inicio de sesion</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                    </div>
+                                </div>
+                            </form>
+                        @else
+                            <div class="text-muted">No hay información del acudiente disponible.</div>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>

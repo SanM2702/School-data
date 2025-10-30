@@ -129,7 +129,55 @@
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
-                <h1 class="mb-4">Estudiantes</h1>
+                <h1 class="mb-4">
+                    {{ $estudiante->persona->primerNombre }} {{ $estudiante->persona->segundoNombre }} {{ $estudiante->persona->primerApellido }} {{ $estudiante->persona->segundoApellido }}
+                </h1>
+
+                <div class="row g-4 align-items-stretch">
+                    <div class="col-md-4 d-flex">
+                        <div class="border rounded bg-white w-100 h-100 d-flex justify-content-center align-items-center">
+                            <div class="d-flex justify-content-center align-items-center" style="height: 100%; aspect-ratio: 3 / 4; overflow: hidden;">
+                                <span class="text-muted">Sin imagen</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8 d-flex">
+                        <div class="card w-100 h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">Información del Estudiante</h5>
+                                <div class="row gy-2">
+                                    <div class="col-sm-6"><strong>Documento:</strong> {{ $estudiante->persona->noDocumento }}</div>
+                                    <div class="col-sm-6"><strong>Teléfono:</strong> {{ $estudiante->persona->telefono }}</div>
+                                    <div class="col-sm-6"><strong>Email:</strong> {{ $estudiante->persona->email }}</div>
+                                    <div class="col-sm-6"><strong>Fecha de Nacimiento:</strong> {{ $estudiante->persona->fechaNacimiento }}</div>
+                                    <div class="col-sm-6"><strong>Estado:</strong> {{ $estudiante->persona->estado }}</div>
+                                    <div class="col-sm-6"><strong>Fecha de Ingreso:</strong> {{ $estudiante->fechaIngreso }}</div>
+                                    <div class="col-sm-6"><strong>Curso:</strong> {{ $estudiante->curso_id }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h1 class="my-4">Acudiente</h1>
+                <div class="card">
+                    <div class="card-body">
+                        @if(!empty($acudiente))
+                            <h5 class="card-title mb-3">
+                                {{ $acudiente->primerNombre }} {{ $acudiente->segundoNombre }} {{ $acudiente->primerApellido }} {{ $acudiente->segundoApellido }}
+                            </h5>
+                            <div class="row gy-2">
+                                <div class="col-sm-6"><strong>Parentesco:</strong> {{ $acudiente->parentesco }}</div>
+                                <div class="col-sm-6"><strong>Documento:</strong> {{ $acudiente->noDocumento }}</div>
+                                <div class="col-sm-6"><strong>Teléfono:</strong> {{ $acudiente->telefono }}</div>
+                                <div class="col-sm-6"><strong>Email:</strong> {{ $acudiente->email }}</div>
+                                <div class="col-sm-6"><strong>Fecha de Nacimiento:</strong> {{ $acudiente->fechaNacimiento }}</div>
+                            </div>
+                        @else
+                            <div class="text-muted">No hay información del acudiente disponible.</div>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>

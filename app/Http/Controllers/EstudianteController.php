@@ -23,6 +23,53 @@ class EstudianteController extends Controller
         return view('estudiantes.index', compact('estudiantes'));
     }
 
+    public function updateContacto($idEstudiante, Request $request)
+    {
+        $estudiante = Estudiante::with('persona')->findOrFail($idEstudiante);
+        $data = $request->validate([
+            'telefono' => ['nullable','string','max:50'],
+            'email'    => ['nullable','email','max:255'],
+        ]);
+
+        DB::table('personas')
+            ->where('idPersona', $estudiante->persona->idPersona)
+            ->update([
+                'telefono'   => $data['telefono'] ?? null,
+                'email'      => $data['email'] ?? null,
+                'updated_at' => now(),
+            ]);
+
+        return back()->with('status', 'Contacto del estudiante actualizado. Nota: No cambiara su correo de inicio de sesion');
+    }
+
+    public function updateContactoAcudiente($idEstudiante, Request $request)
+    {
+        $data = $request->validate([
+            'telefono' => ['nullable','string','max:50'],
+            'email'    => ['nullable','email','max:255'],
+        ]);
+
+        $acudiente = DB::table('estudiante_acudiente as ea')
+            ->join('acudientes as a', 'a.idAcudiente', '=', 'ea.idAcudiente')
+            ->join('personas as p', 'p.idPersona', '=', 'a.idPersona')
+            ->select('p.idPersona')
+            ->where('ea.idEstudiante', $idEstudiante)
+            ->first();
+
+        if ($acudiente) {
+            DB::table('personas')
+                ->where('idPersona', $acudiente->idPersona)
+                ->update([
+                    'telefono'   => $data['telefono'] ?? null,
+                    'email'      => $data['email'] ?? null,
+                    'updated_at' => now(),
+                ]);
+        }
+
+        return back()->with('status', 'Contacto del acudiente actualizado. Nota: No cambiara su correo de inicio de sesion');
+    }
+
+
     /**
      * Show the form to create a new student.
      */
@@ -34,13 +81,53 @@ class EstudianteController extends Controller
     public function mostrar($idEstudiante)
     {
         $estudiante = Estudiante::with('persona')->findOrFail($idEstudiante);
-        return view('estudiantes.mostrar', compact('estudiante'));
+
+        $acudiente = DB::table('estudiante_acudiente as ea')
+            ->join('acudientes as a', 'a.idAcudiente', '=', 'ea.idAcudiente')
+            ->join('personas as p', 'p.idPersona', '=', 'a.idPersona')
+            ->select(
+                'a.idAcudiente',
+                'a.parentesco',
+                'p.primerNombre',
+                'p.segundoNombre',
+                'p.primerApellido',
+                'p.segundoApellido',
+                'p.telefono',
+                'p.email',
+                'p.noDocumento',
+                'p.fechaNacimiento',
+                'p.idPersona'
+            )
+            ->where('ea.idEstudiante', $estudiante->idEstudiante)
+            ->first();
+
+        return view('estudiantes.mostrar', compact('estudiante', 'acudiente'));
     }
 
     public function editar($idEstudiante)
     {
         $estudiante = Estudiante::with('persona')->findOrFail($idEstudiante);
-        return view('estudiantes.editar', compact('estudiante'));
+
+        $acudiente = DB::table('estudiante_acudiente as ea')
+            ->join('acudientes as a', 'a.idAcudiente', '=', 'ea.idAcudiente')
+            ->join('personas as p', 'p.idPersona', '=', 'a.idPersona')
+            ->select(
+                'a.idAcudiente',
+                'a.parentesco',
+                'p.primerNombre',
+                'p.segundoNombre',
+                'p.primerApellido',
+                'p.segundoApellido',
+                'p.telefono',
+                'p.email',
+                'p.noDocumento',
+                'p.fechaNacimiento',
+                'p.idPersona'
+            )
+            ->where('ea.idEstudiante', $estudiante->idEstudiante)
+            ->first();
+
+        return view('estudiantes.editar', compact('estudiante', 'acudiente'));
     }
 
     public function store(Request $request)

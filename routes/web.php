@@ -33,6 +33,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/estudiantes/documento/{noDocumento}/acudiente', [App\Http\Controllers\EstudianteController::class, 'storeAcudiente'])->name('estudiantes.acudientes.store');
     Route::post('/estudiantes/documento/{noDocumento}/matricula', [App\Http\Controllers\EstudianteController::class, 'storeMatricula'])->name('estudiantes.matricula.store');
     Route::get('/estudiantes/documento/{noDocumento}', [App\Http\Controllers\EstudianteController::class, 'info'])->name('estudiantes.info');
+
+    // Actualización de contacto
+    Route::post('/estudiantes/{idEstudiante}/contacto', [App\Http\Controllers\EstudianteController::class, 'updateContacto'])->name('estudiantes.contacto.update');
+    Route::post('/estudiantes/{idEstudiante}/acudiente/contacto', [App\Http\Controllers\EstudianteController::class, 'updateContactoAcudiente'])->name('estudiantes.acudiente.contacto.update');
     
     // Rutas de gestión de roles
     Route::prefix('roles')->name('roles.')->group(function () {
