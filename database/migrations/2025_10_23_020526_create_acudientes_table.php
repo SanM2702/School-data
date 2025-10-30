@@ -11,28 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         Schema::create('acudientes', function (Blueprint $table) {
-            // PK personalizada
             $table->id('idAcudiente');
-
-            // FKs según convenciones existentes
-            $table->unsignedBigInteger('idPersona');
-            $table->unsignedBigInteger('idEstudiante');
-
-            // Datos propios del acudiente
-            $table->string('parentesco');
-
+            $table->unsignedBigInteger('idPersona'); // referencia a la persona (nombre, email, etc.)
+            $table->string('parentesco'); // padre, madre, tutor, etc.
             $table->timestamps();
 
-            // Restricciones
             $table->foreign('idPersona')
                 ->references('idPersona')
                 ->on('personas')
-                ->onDelete('cascade');
-
-            $table->foreign('idEstudiante')
-                ->references('idEstudiante')
-                ->on('estudiantes')
                 ->onDelete('cascade');
         });
     }

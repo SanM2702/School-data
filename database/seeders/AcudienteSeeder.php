@@ -52,13 +52,18 @@ class AcudienteSeeder extends Seeder
             'updated_at'      => now(),
         ]);
 
-        // 4) Registrar relación en acudientes
-        DB::table('acudientes')->insert([
+        // 4) Crear acudiente y vincular en la tabla pivote
+        $acudienteId = DB::table('acudientes')->insertGetId([
             'idPersona'   => $personaAcuId,
-            'idEstudiante'=> $estudianteId,
             'parentesco'  => 'Padre',
             'created_at'  => now(),
             'updated_at'  => now(),
+        ]);
+
+        // 5) Relación many-to-many en tabla pivote
+        DB::table('estudiante_acudiente')->insert([
+            'idEstudiante' => $estudianteId,
+            'idAcudiente'  => $acudienteId,
         ]);
     }
 }
