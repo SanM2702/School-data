@@ -3,14 +3,13 @@
 @section('title', 'Iniciar Sesión - CuentasCobro')
 
 @section('content')
-<div class="login-container d-flex align-items-center justify-content-center">
+<div class="login-container d-flex align-items-center justify-content-center" style="min-height: 100vh; background: url('{{ asset('images/Background-Colegio.jpg') }}') center center / cover no-repeat fixed;">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
                 <div class="login-card p-4">
                     <div class="text-center mb-4">
-                        <i class="fas fa-file-invoice-dollar fa-3x text-primary mb-3"></i>
-                        <h3 class="fw-bold text-dark">CuentasCobro</h3>
+                        <h3 class="fw-bold text-dark">Colegio</h3>
                         <p class="text-muted">Inicia sesión en tu cuenta</p>
                     </div>
 

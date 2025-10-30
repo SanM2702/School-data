@@ -23,6 +23,10 @@ Route::post('/register', [CrearUsuario::class, 'register']);
 // Rutas protegidas por autenticación
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+        
+    // Rutas de estudiantes
+    Route::get('/estudiantes', [App\Http\Controllers\EstudianteController::class, 'index'])->name('estudiantes.index');
+    Route::get('/estudiantes/nuevo', [App\Http\Controllers\EstudianteController::class, 'nuevo'])->name('estudiantes.nuevo');
     
     // Rutas de gestión de roles
     Route::prefix('roles')->name('roles.')->group(function () {

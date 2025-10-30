@@ -68,7 +68,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_estudiantes'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('estudiantes.index') }}">
                                 <i class="fas fa-user-graduate me-2"></i>Estudiantes
                             </a>
                         @endif
