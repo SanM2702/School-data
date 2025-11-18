@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             RectorSeeder::class,     // Luego crear el usuario rector
             PersonaSeeder::class,    // Seed de personas de ejemplo
             EstudianteSeeder::class, // Seed de estudiantes (Santiago)
+            DocenteSeeder::class,    // Seed de docentes de ejemplo
             AcudienteSeeder::class,  // Seed de un acudiente con su estudiante
             UsuariosAdministradoresSeeder::class,
         ]);

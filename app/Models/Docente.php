@@ -5,21 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Estudiante extends Model
+class Docente extends Model
 {
     use HasFactory;
 
-    protected $table = 'estudiantes';
-    protected $primaryKey = 'idEstudiante';
+    protected $table = 'docentes';
+    protected $primaryKey = 'idDocente';
 
     public $incrementing = true;
     protected $keyType = 'int';
 
     protected $fillable = [
         'idPersona',
-        'fechaIngreso',
-        'curso_id',
-        'foto',
+        'area',
     ];
 
     public function persona()
