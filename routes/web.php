@@ -37,6 +37,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cursos', [App\Http\Controllers\CursoController::class, 'index'])->name('cursos.index');
     Route::get('/cursos/{curso}/edit', [App\Http\Controllers\CursoController::class, 'edit'])->name('cursos.edit');
     Route::put('/cursos/{curso}', [App\Http\Controllers\CursoController::class, 'update'])->name('cursos.update');
+    
+    // Materias
+    Route::get('/materias', [App\Http\Controllers\MateriaController::class, 'index'])->name('materias.index');
+    Route::get('/materias/agregar', [App\Http\Controllers\MateriaController::class, 'create'])->name('materias.agregar');
+    Route::post('/materias', [App\Http\Controllers\MateriaController::class, 'store'])->name('materias.store');
+    Route::get('/materias/{materia}/editar', [App\Http\Controllers\MateriaController::class, 'edit'])->name('materias.editar');
+    Route::put('/materias/{materia}', [App\Http\Controllers\MateriaController::class, 'update'])->name('materias.update');
+    Route::delete('/materias/{materia}', [App\Http\Controllers\MateriaController::class, 'destroy'])->name('materias.eliminar');
+    
     Route::get('/estudiantes/{idEstudiante}', [App\Http\Controllers\EstudianteController::class, 'mostrar'])->name('estudiantes.mostrar');
     Route::get('/estudiantes/{idEstudiante}/editar', [App\Http\Controllers\EstudianteController::class, 'editar'])->name('estudiantes.editar');
     Route::post('/estudiantes', [App\Http\Controllers\EstudianteController::class, 'store'])->name('estudiantes.store');
