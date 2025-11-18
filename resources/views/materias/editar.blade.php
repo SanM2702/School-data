@@ -1,11 +1,8 @@
 @extends('layouts.app')
 
-@section('content')
-@php
-    $usuario = Auth::user();
-    $rol = App\Models\RolesModel::find($usuario->roles_id);
-@endphp
+@section('title', 'Dashboard - Colegio')
 
+@section('content')
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -71,7 +68,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_docentes'))
-                            <a class="nav-link active" href="{{ route('docentes.index') }}">
+                            <a class="nav-link" href="{{ route('docentes.index') }}">
                                 <i class="fas fa-chalkboard-teacher me-2"></i>Docentes
                             </a>
                         @endif
@@ -81,7 +78,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_materias'))
-                            <a class="nav-link" href="{{ route('materias.index') }}">
+                            <a class="nav-link active" href="{{ route('materias.index') }}">
                                 <i class="fas fa-book-open me-2"></i>Materias
                             </a>
                         @endif
@@ -122,57 +119,67 @@
 
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
-            <div class="main-content p-4">
-                <h1 class="mb-4">Docentes</h1>
-                <form method="GET" action="{{ route('docentes.index') }}" class="row g-2 mb-3">
-                    <div class="col-auto">
-                        <label for="area" class="form-label visually-hidden">Área</label>
-                        <select name="area" id="area" class="form-select">
-                            <option value="">-- Todas las áreas --</option>
-                            @foreach($areas ?? [] as $a)
-                                <option value="{{ $a }}" {{ (isset($area) && $area === $a) ? 'selected' : '' }}>{{ $a }}</option>
-                            @endforeach
-                        </select>
+            <div class="p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">Editar profesor de la materia</h4>
+                    <a href="{{ route('materias.index') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>Volver
+                    </a>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="mb-2 text-muted">Materia</div>
+                                <div class="fw-semibold">{{ $materia->nombre }}</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2 text-muted">Curso</div>
+                                <div class="fw-semibold">{{ $materia->curso?->grado ?? $materia->curso?->nombre }}</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2 text-muted">Grupo</div>
+                                <div class="fw-semibold">{{ $materia->curso?->grupo }}</div>
+                            </div>
+                        </div>
+
+                        <form action="{{ route('materias.update', $materia->idMateria) }}" method="POST" class="mt-3">
+                            @csrf
+                            @method('PUT')
+
+                            <div class="mb-3">
+                                <label for="docente_id" class="form-label">Profesor asignado</label>
+                                <select id="docente_id" name="docente_id" class="form-select">
+                                    <option value="">Sin asignar</option>
+                                    @foreach($docentes as $docente)
+                                        <option value="{{ $docente->idDocente }}" @selected($materia->docente_id === $docente->idDocente)>
+                                            @php($p = $docente->persona)
+                                            {{ $p ? trim(($p->primerNombre.' '.($p->segundoNombre ?? '')).' '.$p->primerApellido) : 'Docente #'.$docente->idDocente }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('docente_id')
+                                    <div class="text-danger small">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Guardar cambios
+                                </button>
+                                <a href="{{ route('materias.index') }}" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </form>
                     </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">Filtrar</button>
-                        <a href="{{ route('docentes.index') }}" class="btn btn-secondary ms-2">Limpiar</a>
-                    </div>
-                </form>
-                @if($docentes->isEmpty())
-                    <p>No hay docentes registrados.</p>
-                @else
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Nombre</th>
-                                <th>Documento</th>
-                                <th>Área</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($docentes as $docente)
-                                <tr>
-                                    <td>{{ $docente->idDocente }}</td>
-                                    <td>
-                                        @if($docente->persona)
-                                            <a href="{{ route('docentes.mostrar', $docente->idDocente) }}">
-                                                {{ $docente->persona->primerNombre }} {{ $docente->persona->segundoNombre }} {{ $docente->persona->primerApellido }} {{ $docente->persona->segundoApellido }}
-                                            </a>
-                                        @else
-                                            (Persona no asociada)
-                                        @endif
-                                    </td>
-                                    <td>{{ optional($docente->persona)->noDocumento }}</td>
-                                    <td>{{ $docente->area ?? '-' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Logout Form -->
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+    @csrf
+</form>
 @endsection
