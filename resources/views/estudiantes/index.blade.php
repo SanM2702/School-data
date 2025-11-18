@@ -62,44 +62,24 @@
                         <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                     </a>
                     @if($rol)
-                        @if($rol->tienePermiso('gestionar_usuarios'))
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios
-                            </a>
-                        @endif
                         @if($rol->tienePermiso('gestionar_estudiantes'))
                             <a class="nav-link active" href="{{ route('estudiantes.index') }}">
                                 <i class="fas fa-user-graduate me-2"></i>Estudiantes
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_docentes'))
-                            <a class="nav-link " href="{{ route('docentes.index') }}">
+                            <a class="nav-link" href="{{ route('docentes.index') }}">
                                 <i class="fas fa-chalkboard-teacher me-2"></i>Docentes
                             </a>
                         @endif
-                        @if($rol->tienePermiso('gestionar_roles'))
-                            <a class="nav-link" href="{{ route('roles.index') }}">
-                                <i class="fas fa-user-shield me-2"></i>Roles y Permisos
-                            </a>
-                        @endif
-                        @if($rol->tienePermiso('matricular_estudiantes'))
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-user-check me-2"></i>Matricular Estudiantes
-                            </a>
-                        @endif
-                        @if($rol->tienePermiso('gestionar_materias'))
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-book-open me-2"></i>Materias
-                            </a>
-                        @endif
                         @if($rol->tienePermiso('gestionar_cursos'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('cursos.index') }}">
                                 <i class="fas fa-layer-group me-2"></i>Cursos
                             </a>
                         @endif
-                        @if($rol->tienePermiso('gestionar_horarios'))
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-calendar-alt me-2"></i>Horarios
+                        @if($rol->tienePermiso('gestionar_materias'))
+                            <a class="nav-link" href="{{ route('materias.index') }}">
+                                <i class="fas fa-book-open me-2"></i>Materias
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_disciplina'))
@@ -112,9 +92,19 @@
                                 <i class="fas fa-chart-bar me-2"></i>Reportes
                             </a>
                         @endif
-                        @if($rol->tienePermiso('gestionar_pagos'))
+                        @if($rol->tienePermiso('matricular_estudiantes'))
                             <a class="nav-link" href="#">
-                                <i class="fas fa-money-bill-wave me-2"></i>Pagos
+                                <i class="fas fa-user-check me-2"></i>Matriculas
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_roles'))
+                            <a class="nav-link" href="{{ route('roles.index') }}">
+                                <i class="fas fa-user-shield me-2"></i>Roles y Permisos
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_usuarios'))
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios
                             </a>
                         @endif
                         @if($rol->tienePermiso('configurar_sistema'))
@@ -127,6 +117,7 @@
             </div>
         </div>
 
+
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
@@ -138,6 +129,18 @@
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
                 <a href="{{ route('estudiantes.nuevo') }}" class="btn btn-primary mb-3">Nuevo estudiante</a>
+                <div class="mb-3">
+                    <form method="GET" class="d-flex align-items-center">
+                        <label class="me-2">Filtrar por grado:</label>
+                        <select name="grado" class="form-select me-2" style="max-width:300px;">
+                            <option value="">-- Todos los grados --</option>
+                            @foreach($grados as $g)
+                                <option value="{{ $g }}" {{ (isset($grado) && $grado == $g) ? 'selected' : '' }}>{{ $g }}</option>
+                            @endforeach
+                        </select>
+                        <button class="btn btn-outline-primary">Filtrar</button>
+                    </form>
+                </div>
                 @if($estudiantes->isEmpty())
                     <p>No hay estudiantes registrados.</p>
                 @else

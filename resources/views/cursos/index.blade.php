@@ -1,11 +1,8 @@
 @extends('layouts.app')
 
-@section('content')
-@php
-    $usuario = Auth::user();
-    $rol = App\Models\RolesModel::find($usuario->roles_id);
-@endphp
+@section('title', 'Dashboard - Colegio')
 
+@section('content')
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -71,17 +68,17 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_docentes'))
-                            <a class="nav-link active" href="{{ route('docentes.index') }}">
+                            <a class="nav-link" href="{{ route('docentes.index') }}">
                                 <i class="fas fa-chalkboard-teacher me-2"></i>Docentes
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_cursos'))
-                            <a class="nav-link" href="{{ route('cursos.index') }}">
+                            <a class="nav-link active" href="{{ route('cursos.index') }}">
                                 <i class="fas fa-layer-group me-2"></i>Cursos
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_materias'))
-                            <a class="nav-link" href="{{ route('materias.index') }}">
+                            <a class="nav-link" href="#">
                                 <i class="fas fa-book-open me-2"></i>Materias
                             </a>
                         @endif
@@ -123,56 +120,72 @@
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
-                <h1 class="mb-4">Docentes</h1>
-                <form method="GET" action="{{ route('docentes.index') }}" class="row g-2 mb-3">
-                    <div class="col-auto">
-                        <label for="area" class="form-label visually-hidden">Área</label>
-                        <select name="area" id="area" class="form-select">
-                            <option value="">-- Todas las áreas --</option>
-                            @foreach($areas ?? [] as $a)
-                                <option value="{{ $a }}" {{ (isset($area) && $area === $a) ? 'selected' : '' }}>{{ $a }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">Filtrar</button>
-                        <a href="{{ route('docentes.index') }}" class="btn btn-secondary ms-2">Limpiar</a>
-                    </div>
-                </form>
-                @if($docentes->isEmpty())
-                    <p>No hay docentes registrados.</p>
-                @else
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Nombre</th>
-                                <th>Documento</th>
-                                <th>Área</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($docentes as $docente)
-                                <tr>
-                                    <td>{{ $docente->idDocente }}</td>
-                                    <td>
-                                        @if($docente->persona)
-                                            <a href="{{ route('docentes.mostrar', $docente->idDocente) }}">
-                                                {{ $docente->persona->primerNombre }} {{ $docente->persona->segundoNombre }} {{ $docente->persona->primerApellido }} {{ $docente->persona->segundoApellido }}
-                                            </a>
-                                        @else
-                                            (Persona no asociada)
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h3 class="mb-3">Cursos</h3>
+                        <div class="mb-3">
+                            <form method="GET" class="d-flex" action="{{ route('cursos.index') }}">
+                                <select name="grado" class="form-select me-2" style="max-width:300px;">
+                                    <option value="">-- Todos los grados --</option>
+                                    @foreach($grados as $g)
+                                        <option value="{{ $g }}" {{ (isset($grado) && $grado == $g) ? 'selected' : '' }}>{{ $g }}</option>
+                                    @endforeach
+                                </select>
+                                <button class="btn btn-outline-primary">Filtrar</button>
+                            </form>
+                        </div>
+
+                        @if(isset($cursos) && $cursos->count())
+                            @foreach($cursos as $curso)
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        @php
+                                            $display = $curso->grado ?? $curso->nombre;
+                                            if (!empty($curso->grupo)) { $display .= ' ' . $curso->grupo; }
+                                        @endphp
+                                        <strong>{{ $display }}</strong>
+                                        @if(!empty($curso->codigo))
+                                            <small class="text-muted ms-2">({{ $curso->codigo }})</small>
                                         @endif
-                                    </td>
-                                    <td>{{ optional($docente->persona)->noDocumento }}</td>
-                                    <td>{{ $docente->area ?? '-' }}</td>
-                                </tr>
+                                    </div>
+                                    <div class="card-body">
+                                        @if($curso->descripcion)
+                                            <p>{{ $curso->descripcion }}</p>
+                                        @endif
+                                        <div class="mt-2">
+                                            <a href="{{ route('cursos.edit', $curso->idCurso) }}" class="btn btn-sm btn-warning">Editar asignaciones</a>
+                                        </div>
+                                        <h6>Estudiantes</h6>
+                                        @if($curso->estudiantes && $curso->estudiantes->count())
+                                            <ul class="list-group">
+                                                @foreach($curso->estudiantes as $est)
+                                                    <li class="list-group-item">
+                                                        @php
+                                                            $p = $est->persona;
+                                                            $nombre = $p ? ($p->primerNombre . ' ' . ($p->primerApellido ?? '')) : 'Sin persona';
+                                                        @endphp
+                                                        {{ $nombre }}
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        @else
+                                            <p class="text-muted">No hay estudiantes asignados a este curso.</p>
+                                        @endif
+                                    </div>
+                                </div>
                             @endforeach
-                        </tbody>
-                    </table>
-                @endif
+                        @else
+                            <p class="text-muted">No hay cursos registrados.</p>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Logout Form -->
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+    @csrf
+</form>
 @endsection

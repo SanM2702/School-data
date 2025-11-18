@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
+@section('title', 'Editar Curso')
+
 @section('content')
+
 @php
     $usuario = Auth::user();
     $rol = App\Models\RolesModel::find($usuario->roles_id);
@@ -49,10 +52,6 @@
 </nav>
 
 <div class="container-fluid">
-    @php
-        $usuario = Auth::user();
-        $rol = App\Models\RolesModel::find($usuario->roles_id);
-    @endphp
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 p-0">
@@ -71,17 +70,17 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_docentes'))
-                            <a class="nav-link active" href="{{ route('docentes.index') }}">
+                            <a class="nav-link" href="{{ route('docentes.index') }}">
                                 <i class="fas fa-chalkboard-teacher me-2"></i>Docentes
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_cursos'))
-                            <a class="nav-link" href="{{ route('cursos.index') }}">
+                            <a class="nav-link active" href="{{ route('cursos.index') }}">
                                 <i class="fas fa-layer-group me-2"></i>Cursos
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_materias'))
-                            <a class="nav-link" href="{{ route('materias.index') }}">
+                            <a class="nav-link" href="#">
                                 <i class="fas fa-book-open me-2"></i>Materias
                             </a>
                         @endif
@@ -123,56 +122,38 @@
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
-                <h1 class="mb-4">Docentes</h1>
-                <form method="GET" action="{{ route('docentes.index') }}" class="row g-2 mb-3">
-                    <div class="col-auto">
-                        <label for="area" class="form-label visually-hidden">Área</label>
-                        <select name="area" id="area" class="form-select">
-                            <option value="">-- Todas las áreas --</option>
-                            @foreach($areas ?? [] as $a)
-                                <option value="{{ $a }}" {{ (isset($area) && $area === $a) ? 'selected' : '' }}>{{ $a }}</option>
+                @php
+                    $display = $curso->grado ?? $curso->nombre;
+                    if (!empty($curso->grupo)) { $display .= ' ' . $curso->grupo; }
+                @endphp
+                <h3>Editar asignaciones - {{ $display }}</h3>
+                <form method="POST" action="{{ route('cursos.update', $curso->idCurso) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mb-3">
+                        <label for="estudiantes">Estudiantes (marcar los que pertenecen al curso)</label>
+                        <select name="estudiantes[]" id="estudiantes" class="form-select" multiple size="10">
+                            @foreach($estudiantes as $est)
+                                @php
+                                    $p = $est->persona;
+                                    $label = $p ? ($p->primerNombre . ' ' . ($p->primerApellido ?? '')) : 'Sin persona';
+                                    $selected = $curso->estudiantes->contains('idEstudiante', $est->idEstudiante);
+                                @endphp
+                                <option value="{{ $est->idEstudiante }}" {{ $selected ? 'selected' : '' }}>{{ $label }} (ID: {{ $est->idEstudiante }})</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">Filtrar</button>
-                        <a href="{{ route('docentes.index') }}" class="btn btn-secondary ms-2">Limpiar</a>
-                    </div>
+                    <button class="btn btn-primary">Guardar asignaciones</button>
+                    <a href="{{ route('cursos.index') }}" class="btn btn-secondary">Cancelar</a>
                 </form>
-                @if($docentes->isEmpty())
-                    <p>No hay docentes registrados.</p>
-                @else
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Nombre</th>
-                                <th>Documento</th>
-                                <th>Área</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($docentes as $docente)
-                                <tr>
-                                    <td>{{ $docente->idDocente }}</td>
-                                    <td>
-                                        @if($docente->persona)
-                                            <a href="{{ route('docentes.mostrar', $docente->idDocente) }}">
-                                                {{ $docente->persona->primerNombre }} {{ $docente->persona->segundoNombre }} {{ $docente->persona->primerApellido }} {{ $docente->persona->segundoApellido }}
-                                            </a>
-                                        @else
-                                            (Persona no asociada)
-                                        @endif
-                                    </td>
-                                    <td>{{ optional($docente->persona)->noDocumento }}</td>
-                                    <td>{{ $docente->area ?? '-' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
             </div>
         </div>
     </div>
 </div>
+
+<!-- Logout Form -->
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+    @csrf
+</form>
 @endsection
