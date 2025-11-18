@@ -68,17 +68,17 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_estudiantes'))
-                            <a class="nav-link {{ request()->routeIs('estudiantes.*') ? 'active' : '' }}" href="{{ route('estudiantes.index') }}">
+                            <a class="nav-link active" href="{{ route('estudiantes.index') }}">
                                 <i class="fas fa-user-graduate me-2"></i>Estudiantes
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_docentes'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link " href="{{ route('docentes.index') }}">
                                 <i class="fas fa-chalkboard-teacher me-2"></i>Docentes
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_roles'))
-                            <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}">
+                            <a class="nav-link" href="{{ route('roles.index') }}">
                                 <i class="fas fa-user-shield me-2"></i>Roles y Permisos
                             </a>
                         @endif
@@ -126,6 +126,7 @@
                 </nav>
             </div>
         </div>
+
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
