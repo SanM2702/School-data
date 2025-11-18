@@ -137,7 +137,11 @@
                     <div class="col-md-4 d-flex">
                         <div class="border rounded bg-white w-100 h-100 d-flex justify-content-center align-items-center">
                             <div class="d-flex justify-content-center align-items-center" style="height: 100%; aspect-ratio: 3 / 4; overflow: hidden;">
-                                <span class="text-muted">Sin imagen</span>
+                                @if(!empty($estudiante->foto))
+                                    <img src="{{ route('estudiantes.foto', $estudiante->idEstudiante) }}" alt="Foto de {{ $estudiante->persona->primerNombre }}" style="max-width:100%; height:auto; display:block;">
+                                @else
+                                    <span class="text-muted">Sin imagen</span>
+                                @endif
                             </div>
                         </div>
                     </div>

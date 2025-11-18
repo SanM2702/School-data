@@ -137,13 +137,24 @@
                     <div class="col-md-4 d-flex flex-column">
                         <div class="border rounded bg-white w-100 flex-grow-1 d-flex justify-content-center align-items-center">
                             <div class="d-flex justify-content-center align-items-center" style="height: 100%; aspect-ratio: 3 / 4; overflow: hidden;">
-                                <span class="text-muted">Sin imagen</span>
+                                @if($estudiante->foto)
+                                    <img src="{{ route('estudiantes.foto', $estudiante->idEstudiante) }}" alt="Foto estudiante" style="max-width:100%; height:auto; display:block;">
+                                @else
+                                    <span class="text-muted">Sin imagen</span>
+                                @endif
                             </div>
                         </div>
                         <div class="mt-3">
-                            <a href="#" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-image me-1"></i> Editar imagen
-                            </a>
+                            <form action="{{ route('estudiantes.updateFoto', $estudiante->idEstudiante) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="input-group">
+                                    <input type="file" name="foto" accept="image/*" class="form-control" required>
+                                    <button class="btn btn-outline-primary" type="submit"><i class="fas fa-upload me-1"></i> Subir</button>
+                                </div>
+                                @error('foto')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
+                            </form>
                         </div>
                     </div>
                     <div class="col-md-8 d-flex">

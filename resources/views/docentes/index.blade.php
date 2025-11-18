@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('content')
@@ -49,8 +48,11 @@
     </div>
 </nav>
 
-
 <div class="container-fluid">
+    @php
+        $usuario = Auth::user();
+        $rol = App\Models\RolesModel::find($usuario->roles_id);
+    @endphp
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 p-0">
@@ -74,12 +76,12 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_docentes'))
-                            <a class="nav-link" href="{{ route('docentes.index') }}">
+                            <a class="nav-link active" href="{{ route('docentes.index') }}">
                                 <i class="fas fa-chalkboard-teacher me-2"></i>Docentes
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_roles'))
-                            <a class="nav-link active" href="{{ route('roles.index') }}">
+                            <a class="nav-link" href="{{ route('roles.index') }}">
                                 <i class="fas fa-user-shield me-2"></i>Roles y Permisos
                             </a>
                         @endif
@@ -128,51 +130,58 @@
             </div>
         </div>
 
+
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
-                <h1 class="mb-4">Lista de Roles</h1>
-                @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-                @if(session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
-                <a href="{{ route('roles.crear') }}" class="btn btn-primary mb-3">Crear nuevo rol</a>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Descripción</th>
-                            <th>Usuarios asignados</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($roles as $rol)
+                <h1 class="mb-4">Docentes</h1>
+                <form method="GET" action="{{ route('docentes.index') }}" class="row g-2 mb-3">
+                    <div class="col-auto">
+                        <label for="area" class="form-label visually-hidden">Área</label>
+                        <select name="area" id="area" class="form-select">
+                            <option value="">-- Todas las áreas --</option>
+                            @foreach($areas ?? [] as $a)
+                                <option value="{{ $a }}" {{ (isset($area) && $area === $a) ? 'selected' : '' }}>{{ $a }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                        <a href="{{ route('docentes.index') }}" class="btn btn-secondary ms-2">Limpiar</a>
+                    </div>
+                </form>
+                @if($docentes->isEmpty())
+                    <p>No hay docentes registrados.</p>
+                @else
+                    <table class="table table-bordered">
+                        <thead>
                             <tr>
-                                <td>{{ $rol->nombre }}</td>
-                                <td>{{ $rol->descripcion }}</td>
-                                <td>{{ $rol->usuarios_count }}</td>
-                                <td>
-                                    <a href="{{ route('roles.mostrar', $rol->id) }}" class="btn btn-info btn-sm" title="Ver" aria-label="Ver">
-                                        <i class="fas fa-magnifying-glass"></i>
-                                    </a>
-                                    <a href="{{ route('roles.editar', $rol->id) }}" class="btn btn-warning btn-sm" title="Editar" aria-label="Editar">
-                                        <i class="fas fa-pen"></i>
-                                    </a>
-                                    <form action="{{ route('roles.eliminar', $rol->id) }}" method="POST" style="display:inline-block;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Eliminar" aria-label="Eliminar" onclick="return confirm('¿Seguro que deseas eliminar este rol?')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Documento</th>
+                                <th>Área</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach($docentes as $docente)
+                                <tr>
+                                    <td>{{ $docente->idDocente }}</td>
+                                    <td>
+                                        @if($docente->persona)
+                                            <a href="{{ route('docentes.mostrar', $docente->idDocente) }}">
+                                                {{ $docente->persona->primerNombre }} {{ $docente->persona->segundoNombre }} {{ $docente->persona->primerApellido }} {{ $docente->persona->segundoApellido }}
+                                            </a>
+                                        @else
+                                            (Persona no asociada)
+                                        @endif
+                                    </td>
+                                    <td>{{ optional($docente->persona)->noDocumento }}</td>
+                                    <td>{{ $docente->area ?? '-' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
             </div>
         </div>
     </div>

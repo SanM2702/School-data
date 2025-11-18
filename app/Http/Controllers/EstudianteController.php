@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class EstudianteController extends Controller
 {
@@ -326,5 +327,66 @@ class EstudianteController extends Controller
                 'primerApellido' => $persona->primerApellido,
             ],
         ]);
+    }
+
+    /**
+     * Serve student photo stored on FTP (or fallback placeholder).
+     */
+    public function foto($idEstudiante)
+    {
+        $estudiante = Estudiante::findOrFail($idEstudiante);
+
+        if ($estudiante->foto && Storage::disk('ftp')->exists($estudiante->foto)) {
+            $content = Storage::disk('ftp')->get($estudiante->foto);
+            // try to get mime, fall back to jpeg
+            $mime = 'image/jpeg';
+            try {
+                $mime = Storage::disk('ftp')->mimeType($estudiante->foto) ?: $mime;
+            } catch (\Exception $e) {
+                // ignore
+            }
+            return response($content, 200)->header('Content-Type', $mime);
+        }
+
+        // Fallback: return a simple placeholder image from public assets if exists
+        if (file_exists(public_path('images/placeholder-3x4.png'))) {
+            return response()->file(public_path('images/placeholder-3x4.png'));
+        }
+
+        abort(404);
+    }
+
+    /**
+     * Handle foto upload, resize to 3x4 (fit) and store on FTP.
+     */
+    public function updateFoto($idEstudiante, Request $request)
+    {
+        $estudiante = Estudiante::with('persona')->findOrFail($idEstudiante);
+
+        $data = $request->validate([
+            // Accept any image type supported by PHP upload (jpeg/png/gif/webp etc.)
+            'foto' => ['required', 'image', 'max:8192'], // max 8MB
+        ]);
+
+        $file = $request->file('foto');
+
+        // Keep original extension
+        $extension = $file->getClientOriginalExtension() ?: 'jpg';
+        $filename = 'estudiante_' . $estudiante->idEstudiante . '_' . time() . '.' . $extension;
+        $path = 'estudiantes/' . $filename;
+
+        // Store file directly to FTP without server-side image processing
+        try {
+            // Use stream to avoid loading entire file into memory
+            Storage::disk('ftp')->put($path, fopen($file->getPathname(), 'r'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error subiendo la imagen al servidor FTP: ' . $e->getMessage());
+        }
+
+        // Save path in DB
+        $estudiante->foto = $path;
+        $estudiante->save();
+
+        return back()->with('status', 'Foto actualizada correctamente.');
     }
 }

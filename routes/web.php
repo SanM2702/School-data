@@ -26,13 +26,20 @@ Route::middleware(['auth'])->group(function () {
         
     // Rutas de estudiantes
     Route::get('/estudiantes', [App\Http\Controllers\EstudianteController::class, 'index'])->name('estudiantes.index');
-    Route::get('/estudiantes/nuevo', [App\Http\Controllers\EstudianteController::class, 'nuevo'])->name('estudiantes.nuevo');
+        // Student photo serve and upload
+        Route::get('/estudiantes/{id}/foto', [App\Http\Controllers\EstudianteController::class, 'foto'])->name('estudiantes.foto');
+        Route::post('/estudiantes/{id}/foto', [App\Http\Controllers\EstudianteController::class, 'updateFoto'])->name('estudiantes.updateFoto');
+        
+    // Docentes
+    Route::get('/docentes', [App\Http\Controllers\DocenteController::class, 'index'])->name('docentes.index');
+    Route::get('/docentes/{idDocente}', [App\Http\Controllers\DocenteController::class, 'mostrar'])->name('docentes.mostrar');
     Route::get('/estudiantes/{idEstudiante}', [App\Http\Controllers\EstudianteController::class, 'mostrar'])->name('estudiantes.mostrar');
     Route::get('/estudiantes/{idEstudiante}/editar', [App\Http\Controllers\EstudianteController::class, 'editar'])->name('estudiantes.editar');
     Route::post('/estudiantes', [App\Http\Controllers\EstudianteController::class, 'store'])->name('estudiantes.store');
     Route::post('/estudiantes/documento/{noDocumento}/acudiente', [App\Http\Controllers\EstudianteController::class, 'storeAcudiente'])->name('estudiantes.acudientes.store');
     Route::post('/estudiantes/documento/{noDocumento}/matricula', [App\Http\Controllers\EstudianteController::class, 'storeMatricula'])->name('estudiantes.matricula.store');
     Route::get('/estudiantes/documento/{noDocumento}', [App\Http\Controllers\EstudianteController::class, 'info'])->name('estudiantes.info');
+    Route::get('/estudiantes/nuevo', [App\Http\Controllers\EstudianteController::class, 'create'])->name('estudiantes.nuevo');
 
     // Actualización de contacto
     Route::post('/estudiantes/{idEstudiante}/contacto', [App\Http\Controllers\EstudianteController::class, 'updateContacto'])->name('estudiantes.contacto.update');

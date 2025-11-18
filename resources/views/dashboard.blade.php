@@ -73,7 +73,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_docentes'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('docentes.index') }}">
                                 <i class="fas fa-chalkboard-teacher me-2"></i>Docentes
                             </a>
                         @endif
