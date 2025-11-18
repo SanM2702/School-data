@@ -19,9 +19,20 @@ class EstudianteController extends Controller
      */
     public function index()
     {
-        $estudiantes = Estudiante::with('persona')->get();
+        $grado = request('grado');
 
-        return view('estudiantes.index', compact('estudiantes'));
+        $query = Estudiante::with('persona');
+        if ($grado) {
+            $courseIds = \App\Models\Curso::where('grado', $grado)->pluck('idCurso');
+            $query->whereIn('curso_id', $courseIds);
+        }
+
+        $estudiantes = $query->get();
+
+        // Pasar datos para el select de filtro
+        $grados = \App\Models\Curso::whereNotNull('grado')->distinct()->orderBy('grado')->pluck('grado');
+
+        return view('estudiantes.index', compact('estudiantes', 'grados', 'grado'));
     }
 
     public function updateContacto($idEstudiante, Request $request)

@@ -33,6 +33,10 @@ Route::middleware(['auth'])->group(function () {
     // Docentes
     Route::get('/docentes', [App\Http\Controllers\DocenteController::class, 'index'])->name('docentes.index');
     Route::get('/docentes/{idDocente}', [App\Http\Controllers\DocenteController::class, 'mostrar'])->name('docentes.mostrar');
+    // Cursos
+    Route::get('/cursos', [App\Http\Controllers\CursoController::class, 'index'])->name('cursos.index');
+    Route::get('/cursos/{curso}/edit', [App\Http\Controllers\CursoController::class, 'edit'])->name('cursos.edit');
+    Route::put('/cursos/{curso}', [App\Http\Controllers\CursoController::class, 'update'])->name('cursos.update');
     Route::get('/estudiantes/{idEstudiante}', [App\Http\Controllers\EstudianteController::class, 'mostrar'])->name('estudiantes.mostrar');
     Route::get('/estudiantes/{idEstudiante}/editar', [App\Http\Controllers\EstudianteController::class, 'editar'])->name('estudiantes.editar');
     Route::post('/estudiantes', [App\Http\Controllers\EstudianteController::class, 'store'])->name('estudiantes.store');

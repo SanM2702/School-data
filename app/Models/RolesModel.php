@@ -24,7 +24,11 @@ class RolesModel extends Model
 
     public function tienePermiso($permiso)
     {
-        return in_array($permiso, $this->permisos ?? []);
+        $permisos = $this->permisos ?? [];
+        if (in_array('acceso_total', $permisos)) {
+            return true;
+        }
+        return in_array($permiso, $permisos);
     }
 
     public static function obtenerRolesSistema()
@@ -42,4 +46,3 @@ class RolesModel extends Model
     }
 
 }
-
