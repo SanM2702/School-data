@@ -26,4 +26,9 @@ class Estudiante extends Model
     {
         return $this->belongsTo(Persona::class, 'idPersona', 'idPersona');
     }
+
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class, 'curso_id', 'idCurso');
+    }
 }

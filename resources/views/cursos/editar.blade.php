@@ -1,7 +1,9 @@
-
 @extends('layouts.app')
 
+@section('title', 'Editar Curso')
+
 @section('content')
+
 @php
     $usuario = Auth::user();
     $rol = App\Models\RolesModel::find($usuario->roles_id);
@@ -49,7 +51,6 @@
     </div>
 </nav>
 
-
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
@@ -74,7 +75,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_cursos'))
-                            <a class="nav-link" href="{{ route('cursos.index') }}">
+                            <a class="nav-link active" href="{{ route('cursos.index') }}">
                                 <i class="fas fa-layer-group me-2"></i>Cursos
                             </a>
                         @endif
@@ -99,7 +100,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_roles'))
-                            <a class="nav-link active" href="{{ route('roles.index') }}">
+                            <a class="nav-link" href="{{ route('roles.index') }}">
                                 <i class="fas fa-user-shield me-2"></i>Roles y Permisos
                             </a>
                         @endif
@@ -118,54 +119,41 @@
             </div>
         </div>
 
-
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
-                <h1 class="mb-4">Lista de Roles</h1>
-                @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-                @if(session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
-                <a href="{{ route('roles.crear') }}" class="btn btn-primary mb-3">Crear nuevo rol</a>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Descripción</th>
-                            <th>Usuarios asignados</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($roles as $rol)
-                            <tr>
-                                <td>{{ $rol->nombre }}</td>
-                                <td>{{ $rol->descripcion }}</td>
-                                <td>{{ $rol->usuarios_count }}</td>
-                                <td>
-                                    <a href="{{ route('roles.mostrar', $rol->id) }}" class="btn btn-info btn-sm" title="Ver" aria-label="Ver">
-                                        <i class="fas fa-magnifying-glass"></i>
-                                    </a>
-                                    <a href="{{ route('roles.editar', $rol->id) }}" class="btn btn-warning btn-sm" title="Editar" aria-label="Editar">
-                                        <i class="fas fa-pen"></i>
-                                    </a>
-                                    <form action="{{ route('roles.eliminar', $rol->id) }}" method="POST" style="display:inline-block;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Eliminar" aria-label="Eliminar" onclick="return confirm('¿Seguro que deseas eliminar este rol?')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                @php
+                    $display = $curso->grado ?? $curso->nombre;
+                    if (!empty($curso->grupo)) { $display .= ' ' . $curso->grupo; }
+                @endphp
+                <h3>Editar asignaciones - {{ $display }}</h3>
+                <form method="POST" action="{{ route('cursos.update', $curso->idCurso) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mb-3">
+                        <label for="estudiantes">Estudiantes (marcar los que pertenecen al curso)</label>
+                        <select name="estudiantes[]" id="estudiantes" class="form-select" multiple size="10">
+                            @foreach($estudiantes as $est)
+                                @php
+                                    $p = $est->persona;
+                                    $label = $p ? ($p->primerNombre . ' ' . ($p->primerApellido ?? '')) : 'Sin persona';
+                                    $selected = $curso->estudiantes->contains('idEstudiante', $est->idEstudiante);
+                                @endphp
+                                <option value="{{ $est->idEstudiante }}" {{ $selected ? 'selected' : '' }}>{{ $label }} (ID: {{ $est->idEstudiante }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <button class="btn btn-primary">Guardar asignaciones</button>
+                    <a href="{{ route('cursos.index') }}" class="btn btn-secondary">Cancelar</a>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Logout Form -->
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+    @csrf
+</form>
 @endsection
