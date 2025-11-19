@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             AcudienteSeeder::class,  // Seed de un acudiente con su estudiante
             UsuariosAdministradoresSeeder::class,
             MateriasSeeder::class,   // Seed de materias (Matemáticas por curso/grupo)
+            DisciplinaSeeder::class, // Casos disciplinarios de ejemplo
         ]);
         
         // Comentado el usuario de prueba para evitar conflictos

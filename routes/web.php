@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CrearUsuario;
 use App\Http\Controllers\RolController;
+use App\Http\Controllers\DisciplinaController;
 
 // Ruta raíz redirige al login
 Route::get('/', function () {
@@ -37,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/docentes/agregar', [App\Http\Controllers\DocenteController::class, 'agregar'])->name('docentes.agregar');
     Route::post('/docentes', [App\Http\Controllers\DocenteController::class, 'store'])->name('docentes.store');
     Route::get('/docentes/{idDocente}', [App\Http\Controllers\DocenteController::class, 'mostrar'])->name('docentes.mostrar');
+    
     // Cursos
     Route::get('/cursos', [App\Http\Controllers\CursoController::class, 'index'])->name('cursos.index');
     Route::get('/cursos/{curso}/edit', [App\Http\Controllers\CursoController::class, 'edit'])->name('cursos.edit');
@@ -50,6 +52,15 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/materias/{materia}', [App\Http\Controllers\MateriaController::class, 'update'])->name('materias.update');
     Route::delete('/materias/{materia}', [App\Http\Controllers\MateriaController::class, 'destroy'])->name('materias.eliminar');
     
+    // Disciplina
+    Route::get('/disciplina', [DisciplinaController::class, 'index'])->name('disciplina.index');
+    Route::get('/disciplina/agregar', [DisciplinaController::class, 'create'])->name('disciplina.agregar');
+    Route::post('/disciplina', [DisciplinaController::class, 'store'])->name('disciplina.store');
+    Route::get('/disciplina/{disciplina}', [DisciplinaController::class, 'show'])->name('disciplina.mostrar');
+    Route::get('/disciplina/{disciplina}/editar', [DisciplinaController::class, 'edit'])->name('disciplina.editar');
+    Route::put('/disciplina/{disciplina}', [DisciplinaController::class, 'update'])->name('disciplina.actualizar');
+    
+    // Estudiantes
     Route::get('/estudiantes/{idEstudiante}', [App\Http\Controllers\EstudianteController::class, 'mostrar'])->name('estudiantes.mostrar');
     Route::get('/estudiantes/{idEstudiante}/editar', [App\Http\Controllers\EstudianteController::class, 'editar'])->name('estudiantes.editar');
     Route::post('/estudiantes', [App\Http\Controllers\EstudianteController::class, 'store'])->name('estudiantes.store');
@@ -58,6 +69,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/estudiantes/documento/{noDocumento}', [App\Http\Controllers\EstudianteController::class, 'info'])->name('estudiantes.info');
     
 
+    
     // Actualización de contacto
     Route::post('/estudiantes/{idEstudiante}/contacto', [App\Http\Controllers\EstudianteController::class, 'updateContacto'])->name('estudiantes.contacto.update');
     Route::post('/estudiantes/{idEstudiante}/acudiente/contacto', [App\Http\Controllers\EstudianteController::class, 'updateContactoAcudiente'])->name('estudiantes.acudiente.contacto.update');
