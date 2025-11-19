@@ -34,8 +34,15 @@ class CursoController extends Controller
     public function edit($id)
     {
         $curso = Curso::with('estudiantes.persona')->findOrFail($id);
-        // Obtener todos los estudiantes para poder asignarlos
-        $estudiantes = Estudiante::with('persona')->get();
+        // Filtrar estudiantes por el mismo grado (y sin asignar) para asignarlos a este grupo del grado
+        $grado = $curso->grado;
+        $cursoIdsMismoGrado = Curso::where('grado', $grado)->pluck('idCurso');
+        $estudiantes = Estudiante::with('persona')
+            ->where(function($q) use ($cursoIdsMismoGrado) {
+                $q->whereNull('curso_id')
+                  ->orWhereIn('curso_id', $cursoIdsMismoGrado);
+            })
+            ->get();
         return view('cursos.editar', compact('curso', 'estudiantes'));
     }
 

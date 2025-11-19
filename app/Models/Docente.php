@@ -18,6 +18,7 @@ class Docente extends Model
     protected $fillable = [
         'idPersona',
         'area',
+        'linkedin_url',
     ];
 
     public function persona()

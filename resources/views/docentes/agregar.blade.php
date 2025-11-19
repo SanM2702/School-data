@@ -48,8 +48,11 @@
     </div>
 </nav>
 
-
 <div class="container-fluid">
+    @php
+        $usuario = Auth::user();
+        $rol = App\Models\RolesModel::find($usuario->roles_id);
+    @endphp
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 p-0">
@@ -63,12 +66,12 @@
                     </a>
                     @if($rol)
                         @if($rol->tienePermiso('gestionar_estudiantes'))
-                            <a class="nav-link active" href="{{ route('estudiantes.index') }}">
+                            <a class="nav-link" href="{{ route('estudiantes.index') }}">
                                 <i class="fas fa-user-graduate me-2"></i>Estudiantes
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_docentes'))
-                            <a class="nav-link" href="{{ route('docentes.index') }}">
+                            <a class="nav-link active" href="{{ route('docentes.index') }}">
                                 <i class="fas fa-chalkboard-teacher me-2"></i>Docentes
                             </a>
                         @endif
@@ -116,63 +119,71 @@
                 </nav>
             </div>
         </div>
-        
+
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
-                <h1 class="mb-4">
-                    {{ $estudiante->persona->primerNombre }} {{ $estudiante->persona->segundoNombre }} {{ $estudiante->persona->primerApellido }} {{ $estudiante->persona->segundoApellido }}
-                </h1>
+                <h1 class="mb-4">Agregar Docente</h1>
 
-                <div class="row g-4 align-items-stretch">
-                    <div class="col-md-4 d-flex">
-                        <div class="border rounded bg-white w-100 h-100 d-flex justify-content-center align-items-center">
-                            <div class="d-flex justify-content-center align-items-center" style="height: 100%; aspect-ratio: 3 / 4; overflow: hidden;">
-                                @if(!empty($estudiante->foto))
-                                    <img src="{{ route('estudiantes.foto', $estudiante->idEstudiante) }}" alt="Foto de {{ $estudiante->persona->primerNombre }}" style="max-width:100%; height:auto; display:block;">
-                                @else
-                                    <span class="text-muted">Sin imagen</span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-8 d-flex">
-                        <div class="card w-100 h-100">
-                            <div class="card-body">
-                                <h5 class="card-title mb-3">Información del Estudiante</h5>
-                                <div class="row gy-2">
-                                    <div class="col-sm-6"><strong>Documento:</strong> {{ $estudiante->persona->noDocumento }}</div>
-                                    <div class="col-sm-6"><strong>Teléfono:</strong> {{ $estudiante->persona->telefono }}</div>
-                                    <div class="col-sm-6"><strong>Email:</strong> {{ $estudiante->persona->email }}</div>
-                                    <div class="col-sm-6"><strong>Fecha de Nacimiento:</strong> {{ $estudiante->persona->fechaNacimiento }}</div>
-                                    <div class="col-sm-6"><strong>Estado:</strong> {{ $estudiante->persona->estado }}</div>
-                                    <div class="col-sm-6"><strong>Fecha de Ingreso:</strong> {{ $estudiante->fechaIngreso }}</div>
-                                    <div class="col-sm-6"><strong>Curso:</strong> {{ optional($estudiante->curso)->grado ?? '-' }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <form method="POST" action="{{ route('docentes.store') }}" class="row g-3">
+                    @csrf
 
-                <h1 class="my-4">Acudiente</h1>
-                <div class="card">
-                    <div class="card-body">
-                        @if(!empty($acudiente))
-                            <h5 class="card-title mb-3">
-                                {{ $acudiente->primerNombre }} {{ $acudiente->segundoNombre }} {{ $acudiente->primerApellido }} {{ $acudiente->segundoApellido }}
-                            </h5>
-                            <div class="row gy-2">
-                                <div class="col-sm-6"><strong>Parentesco:</strong> {{ $acudiente->parentesco }}</div>
-                                <div class="col-sm-6"><strong>Documento:</strong> {{ $acudiente->noDocumento }}</div>
-                                <div class="col-sm-6"><strong>Teléfono:</strong> {{ $acudiente->telefono }}</div>
-                                <div class="col-sm-6"><strong>Email:</strong> {{ $acudiente->email }}</div>
-                                <div class="col-sm-6"><strong>Fecha de Nacimiento:</strong> {{ $acudiente->fechaNacimiento }}</div>
-                            </div>
-                        @else
-                            <div class="text-muted">No hay información del acudiente disponible.</div>
-                        @endif
+                    <div class="col-md-3">
+                        <label class="form-label">Primer Nombre</label>
+                        <input type="text" name="primerNombre" class="form-control" value="{{ old('primerNombre') }}" required>
                     </div>
-                </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Segundo Nombre</label>
+                        <input type="text" name="segundoNombre" class="form-control" value="{{ old('segundoNombre') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Primer Apellido</label>
+                        <input type="text" name="primerApellido" class="form-control" value="{{ old('primerApellido') }}" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Segundo Apellido</label>
+                        <input type="text" name="segundoApellido" class="form-control" value="{{ old('segundoApellido') }}">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Documento</label>
+                        <input type="text" name="noDocumento" class="form-control" value="{{ old('noDocumento') }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="telefono" class="form-control" value="{{ old('telefono') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ old('email') }}">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha Nacimiento</label>
+                        <input type="date" name="fechaNacimiento" class="form-control" value="{{ old('fechaNacimiento') }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="activo" {{ old('estado','activo')==='activo' ? 'selected' : '' }}>Activo</option>
+                            <option value="inactivo" {{ old('estado')==='inactivo' ? 'selected' : '' }}>Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Área</label>
+                        <input type="text" name="area" class="form-control" value="{{ old('area') }}" placeholder="Matemáticas, Español, etc.">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">LinkedIn (URL)</label>
+                        <input type="url" name="linkedin_url" class="form-control" value="{{ old('linkedin_url') }}" placeholder="https://www.linkedin.com/in/usuario">
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a href="{{ route('docentes.index') }}" class="btn btn-secondary ms-2">Cancelar</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

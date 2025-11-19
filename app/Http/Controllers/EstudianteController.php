@@ -87,12 +87,19 @@ class EstudianteController extends Controller
      */
     public function nuevo()
     {
-        return view('estudiantes.nuevo');
+        // Opciones únicas por grado: un curso representativo por cada grado
+        $cursos = \App\Models\Curso::query()
+            ->whereNotNull('grado')
+            ->selectRaw('grado, MIN(idCurso) as idCurso')
+            ->groupBy('grado')
+            ->orderBy('grado')
+            ->get();
+        return view('estudiantes.nuevo', compact('cursos'));
     }
 
     public function mostrar($idEstudiante)
     {
-        $estudiante = Estudiante::with('persona')->findOrFail($idEstudiante);
+        $estudiante = Estudiante::with(['persona','curso'])->findOrFail($idEstudiante);
 
         $acudiente = DB::table('estudiante_acudiente as ea')
             ->join('acudientes as a', 'a.idAcudiente', '=', 'ea.idAcudiente')
@@ -282,6 +289,7 @@ class EstudianteController extends Controller
         $data = $request->validate([
             'estado'         => ['nullable','in:en_proceso,activo,inactivo'], // será forzado a en_proceso
             'fechaMatricula' => ['nullable','date'],
+            'curso_id'       => ['required','exists:cursos,idCurso'],
         ]);
 
         $now = now();
@@ -297,6 +305,10 @@ class EstudianteController extends Controller
             }
 
             $fecha = $data['fechaMatricula'] ?? ($estudiante->fechaIngreso ?: $now->toDateString());
+
+            // Actualizar el curso del estudiante al seleccionado
+            $estudiante->curso_id = $data['curso_id'];
+            $estudiante->save();
 
             DB::table('matricula')->insert([
                 'idEstudiante'   => $estudiante->idEstudiante,
