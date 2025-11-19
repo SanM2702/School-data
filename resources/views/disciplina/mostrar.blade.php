@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('content')
@@ -63,7 +64,7 @@
                     </a>
                     @if($rol)
                         @if($rol->tienePermiso('gestionar_estudiantes'))
-                            <a class="nav-link active" href="{{ route('estudiantes.index') }}">
+                            <a class="nav-link" href="{{ route('estudiantes.index') }}">
                                 <i class="fas fa-user-graduate me-2"></i>Estudiantes
                             </a>
                         @endif
@@ -83,7 +84,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_disciplina'))
-                            <a class="nav-link" href="{{ route('disciplina.index') }}">
+                            <a class="nav-link active" href="{{ route('disciplina.index') }}">
                                 <i class="fas fa-gavel me-2"></i>Disciplina
                             </a>
                         @endif
@@ -116,61 +117,100 @@
                 </nav>
             </div>
         </div>
-        
-        <!-- Main Content -->
-        <div class="col-md-9 col-lg-10">
-            <div class="main-content p-4">
-                <h1 class="mb-4">
-                    {{ $estudiante->persona->primerNombre }} {{ $estudiante->persona->segundoNombre }} {{ $estudiante->persona->primerApellido }} {{ $estudiante->persona->segundoApellido }}
-                </h1>
 
-                <div class="row g-4 align-items-stretch">
-                    <div class="col-md-4 d-flex">
-                        <div class="border rounded bg-white w-100 h-100 d-flex justify-content-center align-items-center">
-                            <div class="d-flex justify-content-center align-items-center" style="height: 100%; aspect-ratio: 3 / 4; overflow: hidden;">
-                                @if(!empty($estudiante->foto))
-                                    <img src="{{ route('estudiantes.foto', $estudiante->idEstudiante) }}" alt="Foto de {{ $estudiante->persona->primerNombre }}" style="max-width:100%; height:auto; display:block;">
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0"><i class="fas fa-eye me-2"></i>Detalle de caso disciplinario</h4>
+                <a href="{{ route('disciplina.index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Volver
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    @php
+                        $p = optional(optional($disciplina->estudiante)->persona);
+                        $curso = optional(optional($disciplina->estudiante)->curso);
+                        $nombre = trim(($p->primerNombre.' '.($p->segundoNombre ?? '').' '.$p->primerApellido.' '.($p->segundoApellido ?? '')));
+                        $tipo = strtolower($disciplina->tipo_falta);
+                        $map = ['leve'=>'Leve','moderado'=>'Moderado','grave'=>'Grave','muy_grave'=>'Muy grave'];
+                        $badge = ['leve'=>'bg-success','moderado'=>'bg-info','grave'=>'bg-warning text-dark','muy_grave'=>'bg-danger'];
+                    @endphp
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="text-muted small">No Documento estudiante</label>
+                            <div class="fw-semibold">{{ $p->noDocumento ?? '—' }}</div>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="text-muted small">Nombre del estudiante</label>
+                            <div class="fw-semibold">{{ $nombre ?: '—' }}</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small">Curso</label>
+                            <div class="fw-semibold">{{ $curso->nombre ?? '—' }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small">Tipo de falta</label>
+                            <div>
+                                <span class="badge {{ $badge[$tipo] ?? 'bg-secondary' }}">{{ $map[$tipo] ?? $disciplina->tipo_falta }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small">Fecha de falta</label>
+                            <div class="fw-semibold">{{ \Carbon\Carbon::parse($disciplina->fecha)->format('Y-m-d') }}</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="text-muted small">Descripción</label>
+                            <div class="border rounded p-3">{{ $disciplina->descripcion }}</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small">Notificación al estudiante</label>
+                            <div>
+                                @if($disciplina->notificado_estudiante)
+                                    <span class="text-success"><i class="fas fa-check me-1"></i>Notificado</span>
                                 @else
-                                    <span class="text-muted">Sin imagen</span>
+                                    <span class="text-danger"><i class="fas fa-times me-1"></i>No notificado</span>
                                 @endif
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-8 d-flex">
-                        <div class="card w-100 h-100">
-                            <div class="card-body">
-                                <h5 class="card-title mb-3">Información del Estudiante</h5>
-                                <div class="row gy-2">
-                                    <div class="col-sm-6"><strong>Documento:</strong> {{ $estudiante->persona->noDocumento }}</div>
-                                    <div class="col-sm-6"><strong>Teléfono:</strong> {{ $estudiante->persona->telefono }}</div>
-                                    <div class="col-sm-6"><strong>Email:</strong> {{ $estudiante->persona->email }}</div>
-                                    <div class="col-sm-6"><strong>Fecha de Nacimiento:</strong> {{ $estudiante->persona->fechaNacimiento }}</div>
-                                    <div class="col-sm-6"><strong>Estado:</strong> {{ $estudiante->persona->estado }}</div>
-                                    <div class="col-sm-6"><strong>Fecha de Ingreso:</strong> {{ $estudiante->fechaIngreso }}</div>
-                                    <div class="col-sm-6"><strong>Curso:</strong> {{ optional($estudiante->curso)->grado ?? '-' }}</div>
-                                </div>
+                        <div class="col-md-8">
+                            <label class="text-muted small">Reportado por</label>
+                            <div class="fw-semibold">{{ $disciplina->presentador_nombre ?? '—' }} <span class="text-muted">({{ $disciplina->presentador_cargo ?? '—' }})</span></div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small">Estado del caso</label>
+                            <div class="fw-semibold">{{ $disciplina->estado }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small">Tipo de sanción</label>
+                            <div class="fw-semibold">{{ $disciplina->tipo_sancion ?? '—' }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small">Confirmación del acudiente</label>
+                            <div>
+                                @if($disciplina->confirmacion_acudiente)
+                                    <span class="text-success"><i class="fas fa-check me-1"></i>Confirmado</span>
+                                @else
+                                    <span class="text-danger"><i class="fas fa-times me-1"></i>No confirmado</span>
+                                @endif
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <h1 class="my-4">Acudiente</h1>
-                <div class="card">
-                    <div class="card-body">
-                        @if(!empty($acudiente))
-                            <h5 class="card-title mb-3">
-                                {{ $acudiente->primerNombre }} {{ $acudiente->segundoNombre }} {{ $acudiente->primerApellido }} {{ $acudiente->segundoApellido }}
-                            </h5>
-                            <div class="row gy-2">
-                                <div class="col-sm-6"><strong>Parentesco:</strong> {{ $acudiente->parentesco }}</div>
-                                <div class="col-sm-6"><strong>Documento:</strong> {{ $acudiente->noDocumento }}</div>
-                                <div class="col-sm-6"><strong>Teléfono:</strong> {{ $acudiente->telefono }}</div>
-                                <div class="col-sm-6"><strong>Email:</strong> {{ $acudiente->email }}</div>
-                                <div class="col-sm-6"><strong>Fecha de Nacimiento:</strong> {{ $acudiente->fechaNacimiento }}</div>
-                            </div>
-                        @else
-                            <div class="text-muted">No hay información del acudiente disponible.</div>
-                        @endif
+                        <div class="col-12">
+                            <label class="text-muted small">Respuesta del acudiente</label>
+                            <div class="border rounded p-3">{{ $disciplina->respuesta_acudiente ?? '—' }}</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="text-muted small">Observaciones</label>
+                            <div class="border rounded p-3">{{ $disciplina->observaciones ?? '—' }}</div>
+                        </div>
                     </div>
                 </div>
             </div>

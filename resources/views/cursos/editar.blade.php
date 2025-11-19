@@ -80,12 +80,12 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_materias'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('materias.index') }}">
                                 <i class="fas fa-book-open me-2"></i>Materias
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_disciplina'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('disciplina.index') }}">
                                 <i class="fas fa-gavel me-2"></i>Disciplina
                             </a>
                         @endif

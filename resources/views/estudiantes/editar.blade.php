@@ -82,7 +82,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_disciplina'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('disciplina.index') }}">
                                 <i class="fas fa-gavel me-2"></i>Disciplina
                             </a>
                         @endif
