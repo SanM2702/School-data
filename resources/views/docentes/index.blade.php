@@ -124,7 +124,7 @@
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
                 <h1 class="mb-4">Docentes</h1>
-                <form method="GET" action="{{ route('docentes.index') }}" class="row g-2 mb-3">
+                <form method="GET" action="{{ route('docentes.index') }}" class="row g-2 mb-3 align-items-end">
                     <div class="col-auto">
                         <label for="area" class="form-label visually-hidden">Área</label>
                         <select name="area" id="area" class="form-select">
@@ -137,6 +137,13 @@
                     <div class="col-auto">
                         <button type="submit" class="btn btn-primary">Filtrar</button>
                         <a href="{{ route('docentes.index') }}" class="btn btn-secondary ms-2">Limpiar</a>
+                    </div>
+                    <div class="col-auto ms-auto">
+                        @if($rol && $rol->tienePermiso('gestionar_docentes'))
+                            <a href="{{ route('docentes.agregar') }}" class="btn btn-success">
+                                <i class="fas fa-plus me-1"></i> Agregar Docente
+                            </a>
+                        @endif
                     </div>
                 </form>
                 @if($docentes->isEmpty())

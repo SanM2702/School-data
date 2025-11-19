@@ -26,12 +26,16 @@ Route::middleware(['auth'])->group(function () {
         
     // Rutas de estudiantes
     Route::get('/estudiantes', [App\Http\Controllers\EstudianteController::class, 'index'])->name('estudiantes.index');
-        // Student photo serve and upload
-        Route::get('/estudiantes/{id}/foto', [App\Http\Controllers\EstudianteController::class, 'foto'])->name('estudiantes.foto');
-        Route::post('/estudiantes/{id}/foto', [App\Http\Controllers\EstudianteController::class, 'updateFoto'])->name('estudiantes.updateFoto');
+    // Formulario de nuevo estudiante (debe ir antes de las rutas con parámetro)
+    Route::get('/estudiantes/nuevo', [App\Http\Controllers\EstudianteController::class, 'nuevo'])->name('estudiantes.nuevo');
+    // Student photo serve and upload
+    Route::get('/estudiantes/{id}/foto', [App\Http\Controllers\EstudianteController::class, 'foto'])->name('estudiantes.foto');
+    Route::post('/estudiantes/{id}/foto', [App\Http\Controllers\EstudianteController::class, 'updateFoto'])->name('estudiantes.updateFoto');
         
     // Docentes
     Route::get('/docentes', [App\Http\Controllers\DocenteController::class, 'index'])->name('docentes.index');
+    Route::get('/docentes/agregar', [App\Http\Controllers\DocenteController::class, 'agregar'])->name('docentes.agregar');
+    Route::post('/docentes', [App\Http\Controllers\DocenteController::class, 'store'])->name('docentes.store');
     Route::get('/docentes/{idDocente}', [App\Http\Controllers\DocenteController::class, 'mostrar'])->name('docentes.mostrar');
     // Cursos
     Route::get('/cursos', [App\Http\Controllers\CursoController::class, 'index'])->name('cursos.index');
@@ -52,7 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/estudiantes/documento/{noDocumento}/acudiente', [App\Http\Controllers\EstudianteController::class, 'storeAcudiente'])->name('estudiantes.acudientes.store');
     Route::post('/estudiantes/documento/{noDocumento}/matricula', [App\Http\Controllers\EstudianteController::class, 'storeMatricula'])->name('estudiantes.matricula.store');
     Route::get('/estudiantes/documento/{noDocumento}', [App\Http\Controllers\EstudianteController::class, 'info'])->name('estudiantes.info');
-    Route::get('/estudiantes/nuevo', [App\Http\Controllers\EstudianteController::class, 'create'])->name('estudiantes.nuevo');
+    
 
     // Actualización de contacto
     Route::post('/estudiantes/{idEstudiante}/contacto', [App\Http\Controllers\EstudianteController::class, 'updateContacto'])->name('estudiantes.contacto.update');
