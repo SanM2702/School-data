@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Agregar Disciplina - Colegio')
+
 @section('content')
 @php
     $usuario = Auth::user();

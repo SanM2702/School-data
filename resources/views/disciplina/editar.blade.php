@@ -1,11 +1,15 @@
 
 @extends('layouts.app')
 
+@section('title', 'Editar Disciplina - Colegio')
+
 @section('content')
 @php
     $usuario = Auth::user();
     $rol = App\Models\RolesModel::find($usuario->roles_id);
 @endphp
+
+
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">

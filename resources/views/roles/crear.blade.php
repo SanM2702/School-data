@@ -7,6 +7,7 @@
     $rol = App\Models\RolesModel::find($usuario->roles_id);
 @endphp
 
+@section('title', 'Crear Roles - Colegio')
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">

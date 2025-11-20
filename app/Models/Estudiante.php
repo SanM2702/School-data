@@ -31,4 +31,9 @@ class Estudiante extends Model
     {
         return $this->belongsTo(Curso::class, 'curso_id', 'idCurso');
     }
+
+    public function notas()
+    {
+        return $this->hasMany(Nota::class, 'estudiante_id', 'idEstudiante');
+    }
 }

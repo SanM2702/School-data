@@ -7,6 +7,8 @@
     $rol = App\Models\RolesModel::find($usuario->roles_id);
 @endphp
 
+@section('title', 'Roles - Colegio')
+
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -86,6 +88,11 @@
                         @if($rol->tienePermiso('gestionar_disciplina'))
                             <a class="nav-link" href="{{ route('disciplina.index') }}">
                                 <i class="fas fa-gavel me-2"></i>Disciplina
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_notas'))
+                            <a class="nav-link" href="{{ route('notas.index') }}">
+                                <i class="fas fa-book me-2"></i>Notas
                             </a>
                         @endif
                         @if($rol->tienePermiso('ver_reportes_generales'))
