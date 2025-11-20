@@ -98,7 +98,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('matricular_estudiantes'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('matriculas.index') }}">
                                 <i class="fas fa-user-check me-2"></i>Matriculas
                             </a>
                         @endif

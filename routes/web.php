@@ -6,6 +6,7 @@ use App\Http\Controllers\CrearUsuario;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\DisciplinaController;
 use App\Http\Controllers\ReportesController;
+use App\Http\Controllers\MatriculaController;
 
 // Ruta raíz redirige al login
 Route::get('/', function () {
@@ -66,6 +67,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notas/curso/{curso}', [App\Http\Controllers\NotasController::class, 'mostrar'])->name('notas.mostrar');
     Route::get('/notas/curso/{curso}/editar', [App\Http\Controllers\NotasController::class, 'editar'])->name('notas.editar');
     Route::post('/notas/curso/{curso}', [App\Http\Controllers\NotasController::class, 'actualizar'])->name('notas.actualizar');
+    
+    // Matriculas
+    Route::get('/matriculas', [MatriculaController::class, 'index'])->name('matriculas.index');
+    Route::get('/matriculas/{matricula}', [MatriculaController::class, 'mostrar'])->name('matriculas.mostrar');
+    Route::post('/matriculas/{matricula}/estado', [MatriculaController::class, 'actualizarEstado'])->name('matriculas.estado');
+    Route::post('/matriculas/{matricula}/documentos', [MatriculaController::class, 'subirDocumentos'])->name('matriculas.documentos');
     
     // Estudiantes
     Route::get('/estudiantes/{idEstudiante}', [App\Http\Controllers\EstudianteController::class, 'mostrar'])->name('estudiantes.mostrar');
