@@ -113,7 +113,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('configurar_sistema'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('configuracion.index') }}">
                                 <i class="fas fa-cog me-2"></i>Configuración
                             </a>
                         @endif
