@@ -6,6 +6,8 @@
     $rol = App\Models\RolesModel::find($usuario->roles_id);
 @endphp
 
+@section('title', 'Estudiante - Colegio')
+
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -30,7 +32,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('configuracion.index') }}">
                                 <i class="fas fa-cog me-1"></i>Configuración
                             </a>
                         </li>
@@ -48,8 +50,11 @@
     </div>
 </nav>
 
-
 <div class="container-fluid">
+    @php
+        $usuario = Auth::user();
+        $rol = App\Models\RolesModel::find($usuario->roles_id);
+    @endphp
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 p-0">
@@ -83,17 +88,22 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_disciplina'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('disciplina.index') }}">
                                 <i class="fas fa-gavel me-2"></i>Disciplina
                             </a>
                         @endif
+                        @if($rol->tienePermiso('gestionar_notas'))
+                            <a class="nav-link" href="{{ route('notas.index') }}">
+                                <i class="fas fa-book me-2"></i>Notas
+                            </a>
+                        @endif
                         @if($rol->tienePermiso('ver_reportes_generales'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('reportes.index') }}">
                                 <i class="fas fa-chart-bar me-2"></i>Reportes
                             </a>
                         @endif
                         @if($rol->tienePermiso('matricular_estudiantes'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('matriculas.index') }}">
                                 <i class="fas fa-user-check me-2"></i>Matriculas
                             </a>
                         @endif
@@ -103,12 +113,12 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_usuarios'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('usuarios.index') }}">
                                 <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios
                             </a>
                         @endif
                         @if($rol->tienePermiso('configurar_sistema'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('configuracion.index') }}">
                                 <i class="fas fa-cog me-2"></i>Configuración
                             </a>
                         @endif
@@ -116,7 +126,6 @@
                 </nav>
             </div>
         </div>
-
 
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">

@@ -11,6 +11,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Activity;
 
 class EstudianteController extends Controller
 {
@@ -51,6 +53,17 @@ class EstudianteController extends Controller
                 'updated_at' => now(),
             ]);
 
+        Activity::create([
+            'user_id' => Auth::id(),
+            'type' => 'estudiante.contacto_actualizado',
+            'subject_type' => 'estudiante',
+            'subject_id' => $estudiante->idEstudiante,
+            'description' => 'Contacto del estudiante actualizado',
+            'metadata' => [
+                'idEstudiante' => $estudiante->idEstudiante,
+            ],
+        ]);
+
         return back()->with('status', 'Contacto del estudiante actualizado. Nota: No cambiara su correo de inicio de sesion');
     }
 
@@ -76,6 +89,17 @@ class EstudianteController extends Controller
                     'email'      => $data['email'] ?? null,
                     'updated_at' => now(),
                 ]);
+
+            Activity::create([
+                'user_id' => Auth::id(),
+                'type' => 'acudiente.contacto_actualizado',
+                'subject_type' => 'estudiante',
+                'subject_id' => $idEstudiante,
+                'description' => 'Contacto de acudiente actualizado',
+                'metadata' => [
+                    'idEstudiante' => $idEstudiante,
+                ],
+            ]);
         }
 
         return back()->with('status', 'Contacto del acudiente actualizado. Nota: No cambiara su correo de inicio de sesion');
@@ -206,6 +230,17 @@ class EstudianteController extends Controller
                 $userMsg = ' (Sin usuario: email y/o documento faltante)';
             }
 
+            Activity::create([
+                'user_id' => Auth::id(),
+                'type' => 'estudiante.creado',
+                'subject_type' => 'estudiante',
+                'subject_id' => $estudianteId,
+                'description' => 'Nuevo estudiante creado',
+                'metadata' => [
+                    'idPersona' => $personaId,
+                ],
+            ]);
+
             return back()->with('status', "Estudiante creado (ID: {$estudianteId})." . $userMsg);
         });
     }
@@ -280,6 +315,17 @@ class EstudianteController extends Controller
                 $userMsg = ' (Acudiente sin usuario: email y/o documento faltante)';
             }
 
+            Activity::create([
+                'user_id' => Auth::id(),
+                'type' => 'acudiente.creado',
+                'subject_type' => 'acudiente',
+                'subject_id' => $acudienteId,
+                'description' => 'Acudiente creado y asociado a estudiante',
+                'metadata' => [
+                    'idEstudiante' => $estudiante->idEstudiante,
+                ],
+            ]);
+
             return back()->with('status', 'Acudiente creado y asociado correctamente.' . $userMsg);
         });
     }
@@ -310,12 +356,24 @@ class EstudianteController extends Controller
             $estudiante->curso_id = $data['curso_id'];
             $estudiante->save();
 
-            DB::table('matricula')->insert([
+            $matriculaId = DB::table('matricula')->insertGetId([
                 'idEstudiante'   => $estudiante->idEstudiante,
                 'estado'         => 'en_proceso',
                 'fechaMatricula' => $fecha,
                 'created_at'     => $now,
                 'updated_at'     => $now,
+            ]);
+
+            Activity::create([
+                'user_id' => Auth::id(),
+                'type' => 'matricula.creada',
+                'subject_type' => 'matricula',
+                'subject_id' => $matriculaId,
+                'description' => 'Matrícula creada para estudiante',
+                'metadata' => [
+                    'idEstudiante' => $estudiante->idEstudiante,
+                    'curso_id' => $estudiante->curso_id,
+                ],
             ]);
 
             return back()->with('status', 'Matrícula creada correctamente.');

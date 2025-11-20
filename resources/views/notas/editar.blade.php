@@ -1,14 +1,8 @@
-
 @extends('layouts.app')
 
+@section('title', 'Notas - Colegio')
+
 @section('content')
-@php
-    $usuario = Auth::user();
-    $rolUsuario = App\Models\RolesModel::find($usuario->roles_id);
-@endphp
-
-@section('title', 'Mostrar Roles - Colegio')
-
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -94,7 +88,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_notas'))
-                            <a class="nav-link" href="{{ route('notas.index') }}">
+                            <a class="nav-link active" href="{{ route('notas.index') }}">
                                 <i class="fas fa-book me-2"></i>Notas
                             </a>
                         @endif
@@ -109,7 +103,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_roles'))
-                            <a class="nav-link active" href="{{ route('roles.index') }}">
+                            <a class="nav-link" href="{{ route('roles.index') }}">
                                 <i class="fas fa-user-shield me-2"></i>Roles y Permisos
                             </a>
                         @endif
@@ -127,66 +121,74 @@
                 </nav>
             </div>
         </div>
-        
+
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
-                <h1>Detalles del rol: {{ $rol->nombre }}</h1>
-                <div class="mb-3">
-                    <label class="form-label">Descripción:</label>
-                    <div>{{ $rol->descripcion }}</div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label d-block">Permisos por módulo</label>
-                    <div class="row g-3">
-                        @foreach($gruposPermisos as $modulo => $permisos)
-                            @php
-                                $permisosSeleccionados = array_intersect(array_keys($permisos), $rol->permisos ?? []);
-                            @endphp
-                            <div class="col-lg-6">
-                                <div class="card h-100">
-                                    <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
-                                        <span>{{ $modulo }}</span>
-                                        <small class="text-muted">{{ count($permisosSeleccionados) }}/{{ count($permisos) }} seleccionados</small>
-                                    </div>
-                                    <div class="card-body">
-                                        @if(count($permisosSeleccionados))
-                                            <ul class="mb-0">
-                                                @foreach($permisosSeleccionados as $permiso)
-                                                    <li>{{ $permisosDisponibles[$permiso] ?? $permiso }}</li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <span class="text-muted">Sin permisos seleccionados en este módulo</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h3 class="mb-0">Editar Notas</h3>
+                    <div>
+                        <a href="{{ route('notas.mostrar', $curso) }}" class="btn btn-outline-secondary btn-sm">Volver al detalle</a>
                     </div>
                 </div>
-                <h3>Usuarios asignados a este rol</h3>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($usuarios as $usuario)
-                            <tr>
-                                <td>{{ $usuario->name }}</td>
-                                <td>{{ $usuario->email }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                {{ $usuarios->links() }}
-                <a href="{{ route('roles.index') }}" class="btn btn-secondary">Volver a la lista</a>
-                <a href="{{ route('roles.editar', $rol->id) }}" class="btn btn-warning">Editar rol</a>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="mb-3">Curso: {{ $curso->grado }}{{ $curso->grupo ? ' - '.$curso->grupo : '' }}{{ $curso->nombre ? ' - '.$curso->nombre : '' }}</h5>
+
+                        @if(($materias ?? null) && ($estudiantes ?? null) && count($materias) && count($estudiantes))
+                            <form method="POST" action="{{ route('notas.actualizar', $curso) }}">
+                                @csrf
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Estudiante</th>
+                                                @foreach($materias as $materia)
+                                                    <th class="text-center">{{ $materia->nombre }}</th>
+                                                @endforeach
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($estudiantes as $est)
+                                                <tr>
+                                                    <td>
+                                                        {{ $est->persona->primerNombre ?? '' }} {{ $est->persona->segundoNombre ?? '' }} {{ $est->persona->primerApellido ?? '' }} {{ $est->persona->segundoApellido ?? '' }}
+                                                    </td>
+                                                    @foreach($materias as $materia)
+                                                        <td class="text-center" style="max-width:120px;">
+                                                            <input type="number" step="0.01" min="0" max="5" class="form-control form-control-sm text-center"
+                                                                name="notas[{{ $est->idEstudiante }}][{{ $materia->idMateria }}]"
+                                                                value="{{ $notaMap[$est->idEstudiante][$materia->idMateria] ?? '' }}"
+                                                                placeholder="-">
+                                                        </td>
+                                                    @endforeach
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">Deja vacío para eliminar la nota. Escala permitida: 0.00 a 5.00</small>
+                                    <div>
+                                        <a href="{{ route('notas.mostrar', $curso) }}" class="btn btn-outline-secondary">Cancelar</a>
+                                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                    </div>
+                                </div>
+                            </form>
+                        @else
+                            <p class="text-muted mb-0">No hay estudiantes o materias asignadas a este curso.</p>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Logout Form -->
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+    @csrf
+</form>
 @endsection
+

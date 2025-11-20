@@ -4,10 +4,10 @@
 @section('content')
 @php
     $usuario = Auth::user();
-    $rolUsuario = App\Models\RolesModel::find($usuario->roles_id);
+    $rol = App\Models\RolesModel::find($usuario->roles_id);
 @endphp
 
-@section('title', 'Mostrar Roles - Colegio')
+@section('title', 'Mostrar Disciplina - Colegio')
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -89,7 +89,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_disciplina'))
-                            <a class="nav-link" href="{{ route('disciplina.index') }}">
+                            <a class="nav-link active" href="{{ route('disciplina.index') }}">
                                 <i class="fas fa-gavel me-2"></i>Disciplina
                             </a>
                         @endif
@@ -109,7 +109,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_roles'))
-                            <a class="nav-link active" href="{{ route('roles.index') }}">
+                            <a class="nav-link" href="{{ route('roles.index') }}">
                                 <i class="fas fa-user-shield me-2"></i>Roles y Permisos
                             </a>
                         @endif
@@ -127,64 +127,102 @@
                 </nav>
             </div>
         </div>
-        
+
+
         <!-- Main Content -->
-        <div class="col-md-9 col-lg-10">
-            <div class="main-content p-4">
-                <h1>Detalles del rol: {{ $rol->nombre }}</h1>
-                <div class="mb-3">
-                    <label class="form-label">Descripción:</label>
-                    <div>{{ $rol->descripcion }}</div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label d-block">Permisos por módulo</label>
+        <div class="col-md-9 col-lg-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0"><i class="fas fa-eye me-2"></i>Detalle de caso disciplinario</h4>
+                <a href="{{ route('disciplina.index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Volver
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    @php
+                        $p = optional(optional($disciplina->estudiante)->persona);
+                        $curso = optional(optional($disciplina->estudiante)->curso);
+                        $nombre = trim(($p->primerNombre.' '.($p->segundoNombre ?? '').' '.$p->primerApellido.' '.($p->segundoApellido ?? '')));
+                        $tipo = strtolower($disciplina->tipo_falta);
+                        $map = ['leve'=>'Leve','moderado'=>'Moderado','grave'=>'Grave','muy_grave'=>'Muy grave'];
+                        $badge = ['leve'=>'bg-success','moderado'=>'bg-info','grave'=>'bg-warning text-dark','muy_grave'=>'bg-danger'];
+                    @endphp
+
                     <div class="row g-3">
-                        @foreach($gruposPermisos as $modulo => $permisos)
-                            @php
-                                $permisosSeleccionados = array_intersect(array_keys($permisos), $rol->permisos ?? []);
-                            @endphp
-                            <div class="col-lg-6">
-                                <div class="card h-100">
-                                    <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
-                                        <span>{{ $modulo }}</span>
-                                        <small class="text-muted">{{ count($permisosSeleccionados) }}/{{ count($permisos) }} seleccionados</small>
-                                    </div>
-                                    <div class="card-body">
-                                        @if(count($permisosSeleccionados))
-                                            <ul class="mb-0">
-                                                @foreach($permisosSeleccionados as $permiso)
-                                                    <li>{{ $permisosDisponibles[$permiso] ?? $permiso }}</li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <span class="text-muted">Sin permisos seleccionados en este módulo</span>
-                                        @endif
-                                    </div>
-                                </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small">No Documento estudiante</label>
+                            <div class="fw-semibold">{{ $p->noDocumento ?? '—' }}</div>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="text-muted small">Nombre del estudiante</label>
+                            <div class="fw-semibold">{{ $nombre ?: '—' }}</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small">Curso</label>
+                            <div class="fw-semibold">{{ $curso->nombre ?? '—' }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small">Tipo de falta</label>
+                            <div>
+                                <span class="badge {{ $badge[$tipo] ?? 'bg-secondary' }}">{{ $map[$tipo] ?? $disciplina->tipo_falta }}</span>
                             </div>
-                        @endforeach
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small">Fecha de falta</label>
+                            <div class="fw-semibold">{{ \Carbon\Carbon::parse($disciplina->fecha)->format('Y-m-d') }}</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="text-muted small">Descripción</label>
+                            <div class="border rounded p-3">{{ $disciplina->descripcion }}</div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small">Notificación al estudiante</label>
+                            <div>
+                                @if($disciplina->notificado_estudiante)
+                                    <span class="text-success"><i class="fas fa-check me-1"></i>Notificado</span>
+                                @else
+                                    <span class="text-danger"><i class="fas fa-times me-1"></i>No notificado</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="text-muted small">Reportado por</label>
+                            <div class="fw-semibold">{{ $disciplina->presentador_nombre ?? '—' }} <span class="text-muted">({{ $disciplina->presentador_cargo ?? '—' }})</span></div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="text-muted small">Estado del caso</label>
+                            <div class="fw-semibold">{{ $disciplina->estado }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small">Tipo de sanción</label>
+                            <div class="fw-semibold">{{ $disciplina->tipo_sancion ?? '—' }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted small">Confirmación del acudiente</label>
+                            <div>
+                                @if($disciplina->confirmacion_acudiente)
+                                    <span class="text-success"><i class="fas fa-check me-1"></i>Confirmado</span>
+                                @else
+                                    <span class="text-danger"><i class="fas fa-times me-1"></i>No confirmado</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="text-muted small">Respuesta del acudiente</label>
+                            <div class="border rounded p-3">{{ $disciplina->respuesta_acudiente ?? '—' }}</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="text-muted small">Observaciones</label>
+                            <div class="border rounded p-3">{{ $disciplina->observaciones ?? '—' }}</div>
+                        </div>
                     </div>
                 </div>
-                <h3>Usuarios asignados a este rol</h3>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($usuarios as $usuario)
-                            <tr>
-                                <td>{{ $usuario->name }}</td>
-                                <td>{{ $usuario->email }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                {{ $usuarios->links() }}
-                <a href="{{ route('roles.index') }}" class="btn btn-secondary">Volver a la lista</a>
-                <a href="{{ route('roles.editar', $rol->id) }}" class="btn btn-warning">Editar rol</a>
             </div>
         </div>
     </div>

@@ -26,4 +26,9 @@ class Curso extends Model
     {
         return $this->hasMany(Estudiante::class, 'curso_id', 'idCurso');
     }
+
+    public function materias()
+    {
+        return $this->hasMany(Materia::class, 'curso_id', 'idCurso');
+    }
 }

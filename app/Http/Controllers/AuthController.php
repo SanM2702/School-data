@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Estudiante;
+use App\Models\Docente;
+use App\Models\Curso;
+use App\Models\Activity;
 
 class AuthController extends Controller
 {
@@ -38,7 +42,19 @@ class AuthController extends Controller
     // Mostrar dashboard/menú principal
     public function dashboard()
     {
-        return view('dashboard');
+        $totalEstudiantes = Estudiante::count();
+        $totalDocentes = Docente::count();
+        $totalCursos = Curso::count();
+        $totalUsuarios = User::count();
+        $recentActivities = Activity::with('user')->orderByDesc('id')->limit(10)->get();
+
+        return view('dashboard', compact(
+            'totalEstudiantes',
+            'totalDocentes',
+            'totalCursos',
+            'totalUsuarios',
+            'recentActivities'
+        ));
     }
 
     // Procesar logout

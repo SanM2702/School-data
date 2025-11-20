@@ -1,14 +1,8 @@
-
 @extends('layouts.app')
 
+@section('title', 'Dashboard - Colegio')
+
 @section('content')
-@php
-    $usuario = Auth::user();
-    $rolUsuario = App\Models\RolesModel::find($usuario->roles_id);
-@endphp
-
-@section('title', 'Mostrar Roles - Colegio')
-
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
@@ -104,12 +98,12 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('matricular_estudiantes'))
-                            <a class="nav-link" href="{{ route('matriculas.index') }}">
+                            <a class="nav-link active" href="{{ route('matriculas.index') }}">
                                 <i class="fas fa-user-check me-2"></i>Matriculas
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_roles'))
-                            <a class="nav-link active" href="{{ route('roles.index') }}">
+                            <a class="nav-link" href="{{ route('roles.index') }}">
                                 <i class="fas fa-user-shield me-2"></i>Roles y Permisos
                             </a>
                         @endif
@@ -127,66 +121,83 @@
                 </nav>
             </div>
         </div>
-        
+
         <!-- Main Content -->
-        <div class="col-md-9 col-lg-10">
-            <div class="main-content p-4">
-                <h1>Detalles del rol: {{ $rol->nombre }}</h1>
-                <div class="mb-3">
-                    <label class="form-label">Descripción:</label>
-                    <div>{{ $rol->descripcion }}</div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label d-block">Permisos por módulo</label>
-                    <div class="row g-3">
-                        @foreach($gruposPermisos as $modulo => $permisos)
-                            @php
-                                $permisosSeleccionados = array_intersect(array_keys($permisos), $rol->permisos ?? []);
-                            @endphp
-                            <div class="col-lg-6">
-                                <div class="card h-100">
-                                    <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
-                                        <span>{{ $modulo }}</span>
-                                        <small class="text-muted">{{ count($permisosSeleccionados) }}/{{ count($permisos) }} seleccionados</small>
-                                    </div>
-                                    <div class="card-body">
-                                        @if(count($permisosSeleccionados))
-                                            <ul class="mb-0">
-                                                @foreach($permisosSeleccionados as $permiso)
-                                                    <li>{{ $permisosDisponibles[$permiso] ?? $permiso }}</li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <span class="text-muted">Sin permisos seleccionados en este módulo</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
+        <div class="col-md-9 col-lg-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">Matrículas</h4>
+            </div>
+
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
+            @endif
+
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Estudiante</th>
+                                    <th>Curso</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Proceso</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse(($matriculas ?? []) as $m)
+                                    @php
+                                        $persona = optional(optional($m->estudiante)->persona);
+                                        $curso = optional(optional($m->estudiante)->curso);
+                                        $nombre = trim(($persona->primerNombre ?? '') . ' ' . ($persona->primerApellido ?? ''));
+                                        $estado = $m->estado;
+                                        $badge = $estado === 'activo' ? 'success' : ($estado === 'en_proceso' ? 'warning' : 'secondary');
+                                    @endphp
+                                    <tr>
+                                        <td>#{{ $m->idMatricula }}</td>
+                                        <td>{{ $nombre ?: 'N/A' }}</td>
+                                        <td>{{ $curso->grado ?? 'Sin curso' }}</td>
+                                        <td>{{ $m->fechaMatricula ?: '—' }}</td>
+                                        <td><span class="badge bg-{{ $badge }} text-uppercase">{{ str_replace('_',' ',$estado) }}</span></td>
+                                        <td>
+                                            <div class="d-flex gap-1">
+                                                <span class="badge {{ $estado==='en_proceso'?'bg-primary':'bg-light text-dark' }}">En proceso</span>
+                                                <span class="badge {{ $estado==='activo'?'bg-primary':'bg-light text-dark' }}">Activo</span>
+                                                <span class="badge {{ $estado==='inactivo'?'bg-primary':'bg-light text-dark' }}">Inactivo</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{{ route('matriculas.mostrar', $m->idMatricula) }}" class="btn btn-sm btn-outline-primary">Ver</a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center p-4">No hay matrículas registradas.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <h3>Usuarios asignados a este rol</h3>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Email</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($usuarios as $usuario)
-                            <tr>
-                                <td>{{ $usuario->name }}</td>
-                                <td>{{ $usuario->email }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                {{ $usuarios->links() }}
-                <a href="{{ route('roles.index') }}" class="btn btn-secondary">Volver a la lista</a>
-                <a href="{{ route('roles.editar', $rol->id) }}" class="btn btn-warning">Editar rol</a>
+                @if(isset($matriculas))
+                    <div class="card-footer">
+                        {{ $matriculas->links() }}
+                    </div>
+                @endif
             </div>
         </div>
+        
     </div>
 </div>
+
+<!-- Logout Form -->
+<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+    @csrf
+</form>
 @endsection

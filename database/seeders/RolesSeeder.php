@@ -99,7 +99,7 @@ class RolesSeeder extends Seeder
                 ]
             ],
             [
-                'nombre' => 'Profesor',
+                'nombre' => 'Docente',
                 'descripcion' => 'Docente encargado de impartir clases y evaluar estudiantes',
                 'permisos' => [
                     'ver_estudiantes',
@@ -151,7 +151,17 @@ class RolesSeeder extends Seeder
                     'cambiar_contrasena',
                     'ver_notificaciones'
                 ]
-            ]
+            ],
+            [
+                'nombre' => 'Tesoreria',
+                'descripcion' => 'Gestión de tesorería: pagos y estado de matrícula',
+                'permisos' => [
+                    'cambiar_estado_matricula',
+                    'gestionar_pagos',
+                    'ver_pagos',
+                    'ver_reportes_financieros'
+                ]
+            ],
         ];
 
         foreach ($roles as $rol) {

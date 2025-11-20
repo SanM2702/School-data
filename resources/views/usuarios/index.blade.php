@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Materias - Colegio')
+@section('title', 'Usuarios - Colegio')
 
 @section('content')
 <!-- Navbar -->
@@ -78,7 +78,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_materias'))
-                            <a class="nav-link active" href="{{ route('materias.index') }}">
+                            <a class="nav-link" href="{{ route('materias.index') }}">
                                 <i class="fas fa-book-open me-2"></i>Materias
                             </a>
                         @endif
@@ -108,7 +108,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_usuarios'))
-                            <a class="nav-link" href="{{ route('usuarios.index') }}">
+                            <a class="nav-link active" href="{{ route('usuarios.index') }}">
                                 <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios
                             </a>
                         @endif
@@ -123,80 +123,91 @@
         </div>
 
         <!-- Main Content -->
-        <div class="col-md-9 col-lg-10">
-            <div class="p-4">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
-                    <h4 class="mb-0">Materias</h4>
-                    <div class="d-flex gap-2 align-items-center">
-                        <form method="GET" action="{{ route('materias.index') }}" class="d-flex gap-2">
-                            <input type="text" name="materia" class="form-control form-control-sm" placeholder="Filtrar por materia" value="{{ request('materia') }}" />
-                            <button class="btn btn-sm btn-outline-primary" type="submit">
-                                <i class="fas fa-search me-1"></i>Filtrar
-                            </button>
-                            @if(request('materia'))
-                                <a href="{{ route('materias.index') }}" class="btn btn-sm btn-outline-secondary">Limpiar</a>
-                            @endif
+        <div class="col-md-9 col-lg-10 p-4">
+            <div class="container-fluid">
+                @if(session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
+                @if(session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <form class="row g-2 align-items-end" method="GET" action="{{ route('usuarios.index') }}">
+                            <div class="col-sm-6 col-md-4">
+                                <label for="rol" class="form-label">Filtrar por rol</label>
+                                <select class="form-select" id="rol" name="rol">
+                                    <option value="" {{ empty($rolFiltro) ? 'selected' : '' }}>Todos</option>
+                                    <option value="sin_rol" {{ ($rolFiltro === 'sin_rol') ? 'selected' : '' }}>Sin rol</option>
+                                    @foreach($roles as $r)
+                                        <option value="{{ $r->id }}" {{ ($rolFiltro == $r->id) ? 'selected' : '' }}>{{ $r->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-sm-6 col-md-4">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i>Filtrar</button>
+                                <a href="{{ route('usuarios.index') }}" class="btn btn-outline-secondary ms-2">Limpiar</a>
+                            </div>
                         </form>
-                        <a href="{{ route('materias.agregar') }}" class="btn btn-sm btn-success">
-                            <i class="fas fa-plus me-1"></i>Agregar materia
-                        </a>
                     </div>
                 </div>
 
-                @if(session('status'))
-                    <div class="alert alert-success">{{ session('status') }}</div>
-                @endif
-
                 <div class="card shadow-sm">
-                    <div class="card-body">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-users me-2"></i>Usuarios del sistema
+                    </div>
+                    <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-striped align-middle">
+                            <table class="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Materia</th>
-                                        <th>Curso</th>
-                                        <th>Grupo</th>
-                                        <th>Profesor</th>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Rol</th>
                                         <th class="text-end">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($materias as $materia)
+                                    @forelse($usuarios as $u)
                                         <tr>
-                                            <td>{{ $materia->nombre }}</td>
-                                            <td>{{ $materia->curso?->grado ?? $materia->curso?->nombre }}</td>
-                                            <td>{{ $materia->curso?->grupo }}</td>
-                                            <td>
-                                                @if($materia->docente && $materia->docente->persona)
-                                                    {{ trim($materia->docente->persona->primerNombre.' '.$materia->docente->persona->primerApellido) }}
-                                                @else
-                                                    <span class="text-muted">Sin asignar</span>
-                                                @endif
-                                            </td>
+                                            <td>{{ $u->name }}</td>
+                                            <td>{{ $u->email }}</td>
+                                            <td>{{ optional($u->rol)->nombre ?? 'Sin rol' }}</td>
                                             <td class="text-end">
-                                                <div class="d-inline-flex gap-1">
-                                                    <a href="{{ route('materias.editar', $materia->idMateria) }}" class="btn btn-sm btn-primary" title="Editar" aria-label="Editar">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <form action="{{ route('materias.eliminar', $materia->idMateria) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta materia?');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar" aria-label="Eliminar">
-                                                            <i class="fas fa-trash"></i>
+                                                @if($u->rol)
+                                                    <button class="btn btn-sm btn-outline-danger" onclick="removerRol({{ $u->id }})">
+                                                        <i class="fas fa-user-times me-1"></i>Remover rol
+                                                    </button>
+                                                @else
+                                                    <div class="d-flex justify-content-end gap-2">
+                                                        <select class="form-select form-select-sm w-auto" id="rol_select_{{ $u->id }}">
+                                                            <option value="">Seleccione rol</option>
+                                                            @foreach($roles as $r)
+                                                                <option value="{{ $r->id }}">{{ $r->nombre }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        <button class="btn btn-sm btn-outline-primary" onclick="asignarRol({{ $u->id }})">
+                                                            <i class="fas fa-user-check me-1"></i>Asignar
                                                         </button>
-                                                    </form>
-                                                </div>
+                                                    </div>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center text-muted">No hay materias registradas.</td>
+                                            <td colspan="4" class="text-center py-4">No hay usuarios para mostrar.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                    @if($usuarios instanceof \Illuminate\Contracts\Pagination\Paginator || $usuarios instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
+                        <div class="card-footer">
+                            {{ $usuarios->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -207,4 +218,50 @@
 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
     @csrf
 </form>
+@push('scripts')
+<script>
+function csrfToken() {
+  const el = document.querySelector('meta[name="csrf-token"]');
+  return el ? el.getAttribute('content') : '';
+}
+async function asignarRol(usuarioId) {
+  const select = document.getElementById('rol_select_' + usuarioId);
+  const rolId = select ? select.value : '';
+  if (!rolId) { alert('Seleccione un rol.'); return; }
+  try {
+    const res = await fetch("{{ route('roles.asignar') }}", {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': csrfToken() },
+      body: JSON.stringify({ usuario_id: usuarioId, rol_id: rolId })
+    });
+    const data = await res.json();
+    if (data.exito) {
+      location.reload();
+    } else {
+      alert(data.error || 'No se pudo asignar el rol');
+    }
+  } catch (e) {
+    alert('Error de red al asignar rol');
+  }
+}
+async function removerRol(usuarioId) {
+  if (!confirm('¿Remover el rol de este usuario?')) return;
+  try {
+    const res = await fetch("{{ route('roles.remover') }}", {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'X-CSRF-TOKEN': csrfToken() },
+      body: JSON.stringify({ usuario_id: usuarioId })
+    });
+    const data = await res.json();
+    if (data.exito) {
+      location.reload();
+    } else {
+      alert(data.error || 'No se pudo remover el rol');
+    }
+  } catch (e) {
+    alert('Error de red al remover rol');
+  }
+}
+</script>
+@endpush
 @endsection

@@ -315,56 +315,41 @@ class RolController extends Controller
             'CoordinadorAcademico',
             'Acudiente',
             'Estudiante',
-            'Profesor'
+            'Docente',
+            'Tesoreria',
         ];
 
         return in_array($nombreRol, $rolesSistema);
     }
 
     /**
-     * Obtener permisos disponibles para el sistema escolar
+     * Permisos disponibles agrupados y en plano
      */
     private function obtenerPermisosDisponibles()
     {
         $grupos = [
             'Usuarios' => [
-                'gestionar_usuarios' => 'Crear, editar y eliminar usuarios del sistema',
-                'ver_usuarios' => 'Ver lista y detalles de usuarios',
-                'asignar_roles' => 'Asignar y modificar roles de usuarios',
+                'gestionar_usuarios' => 'Gestionar usuarios',
+                'gestionar_roles' => 'Gestionar roles y permisos',
             ],
             'Estudiantes' => [
-                'gestionar_estudiantes' => 'Crear, editar y eliminar estudiantes',
-                'ver_estudiantes' => 'Ver lista y detalles de estudiantes',
-                'matricular_estudiantes' => 'Realizar matrículas de estudiantes',
-                'ver_historial_academico' => 'Ver historial académico completo',
-                'gestionar_asistencia' => 'Registrar y modificar asistencia',
+                'gestionar_estudiantes' => 'Ver y gestionar estudiantes',
+                'matricular_estudiantes' => 'Acceder a módulo de matrículas',
             ],
             'Docentes' => [
-                'gestionar_docentes' => 'Crear, editar y eliminar docentes',
-                'ver_docentes' => 'Ver lista y detalles de docentes',
-                'asignar_materias' => 'Asignar materias a docentes',
+                'gestionar_docentes' => 'Ver y gestionar docentes',
             ],
-            'Académico' => [
-                'registrar_notas' => 'Registrar y modificar calificaciones',
-                'ver_notas' => 'Ver calificaciones de estudiantes',
-                'aprobar_notas' => 'Aprobar calificaciones finales',
-                'crear_actividades' => 'Crear actividades y tareas',
-                'gestionar_horarios' => 'Crear y modificar horarios',
-                'gestionar_periodos' => 'Configurar periodos académicos',
-                'gestionar_materias' => 'Crear y modificar materias',
-                'gestionar_cursos' => 'Crear y modificar cursos',
+            'Cursos' => [
+                'gestionar_cursos' => 'Ver y gestionar cursos',
+            ],
+            'Materias' => [
+                'gestionar_materias' => 'Ver y gestionar materias',
             ],
             'Disciplina' => [
-                'gestionar_disciplina' => 'Registrar y gestionar incidencias',
-                'ver_reportes_disciplinarios' => 'Ver reportes disciplinarios',
-                'aprobar_sanciones' => 'Aprobar sanciones disciplinarias',
-                'justificar_inasistencias' => 'Justificar ausencias de estudiantes',
+                'gestionar_disciplina' => 'Ver y gestionar disciplina',
             ],
-            'Comunicación' => [
-                'enviar_comunicados' => 'Enviar comunicados generales',
-                'comunicarse_acudientes' => 'Comunicación con acudientes',
-                'comunicarse_docentes' => 'Comunicación con docentes',
-                'ver_comunicados' => 'Ver comunicados recibidos',
+            'Notas' => [
+                'gestionar_notas' => 'Ver y gestionar notas',
             ],
             'Reportes' => [
                 'ver_reportes_generales' => 'Ver reportes generales del colegio',
@@ -373,18 +358,20 @@ class RolController extends Controller
                 'generar_reportes' => 'Generar reportes personalizados',
                 'exportar_reportes' => 'Exportar reportes a Excel/PDF',
             ],
+            'Matriculas' => [
+                'cambiar_estado_matricula' => 'Cambiar estado de la matrícula (Tesorería)',
+                'subir_documentos_matricula' => 'Subir documentos requeridos (Acudiente)',
+            ],
             'Finanzas' => [
                 'gestionar_pagos' => 'Registrar y gestionar pagos',
                 'ver_pagos' => 'Ver información de pagos',
                 'generar_recibos' => 'Generar recibos de pago',
                 'configurar_pensiones' => 'Configurar valores de pensión',
             ],
-            'Sistema' => [
-                'configurar_sistema' => 'Acceso a configuración general',
-                'gestionar_roles' => 'Crear y modificar roles',
-                'gestionar_permisos' => 'Asignar permisos a roles',
-                'ver_logs_sistema' => 'Ver logs del sistema',
-                'hacer_respaldos' => 'Realizar respaldos de datos',
+            'Configuracion' => [
+                'configurar_sistema' => 'Configurar sistema',
+            ],
+            'Seguridad' => [
                 'acceso_total' => 'Acceso total al sistema (Super Admin)',
             ],
             'Personales' => [

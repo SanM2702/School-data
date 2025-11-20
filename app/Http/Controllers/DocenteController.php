@@ -6,6 +6,11 @@ use App\Models\Docente;
 use App\Models\Persona;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\RolesModel;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Activity;
 
 class DocenteController extends Controller
 {
@@ -63,10 +68,37 @@ class DocenteController extends Controller
                 'estado'         => $data['estado'] ?? 'activo',
             ]);
 
-            Docente::create([
+            $docente = Docente::create([
                 'idPersona' => $persona->idPersona,
                 'area'      => $data['area'] ?? null,
                 'linkedin_url' => $data['linkedin_url'] ?? null,
+            ]);
+
+            // Crear/actualizar usuario y asignar rol Docente automáticamente
+            if (!empty($persona->email)) {
+                $rolDocente = RolesModel::where('nombre', 'Docente')->first();
+                $defaultPassword = 'docente123';
+                User::updateOrCreate(
+                    ['email' => $persona->email],
+                    [
+                        'name' => trim($persona->primerNombre . ' ' . $persona->primerApellido),
+                        'password' => Hash::make($defaultPassword),
+                        'roles_id' => $rolDocente ? $rolDocente->id : null,
+                        'email_verified_at' => now(),
+                    ]
+                );
+            }
+
+            Activity::create([
+                'user_id' => Auth::id(),
+                'type' => 'docente.creado',
+                'subject_type' => 'docente',
+                'subject_id' => $docente->idDocente ?? null,
+                'description' => 'Nuevo docente creado',
+                'metadata' => [
+                    'idPersona' => $persona->idPersona,
+                    'area' => $docente->area,
+                ],
             ]);
         });
 

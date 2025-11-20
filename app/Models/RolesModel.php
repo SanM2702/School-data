@@ -37,6 +37,7 @@ class RolesModel extends Model
             'Admin' => 'Administrador del Sistema',
             'Rector' => 'Rector',
             'Acudiente' => 'Acudiente',
+            'Tesoreria' => 'Tesorería',
             'CoordinadorAcademico' => 'CoordinadorAcademico',
             'CoordinadorConvivencia' => 'CoordinadorConvivencia',
             'Estudiante' => 'Estudiante',
