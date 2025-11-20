@@ -315,7 +315,7 @@ class RolController extends Controller
             'CoordinadorAcademico',
             'Acudiente',
             'Estudiante',
-            'Profesor',
+            'Docente',
             'Tesoreria',
         ];
 

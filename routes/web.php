@@ -7,6 +7,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\DisciplinaController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\MatriculaController;
+use App\Http\Controllers\UsuarioController;
 
 // Ruta raíz redirige al login
 Route::get('/', function () {
@@ -22,10 +23,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register', [CrearUsuario::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [CrearUsuario::class, 'register']);
 
-
 // Rutas protegidas por autenticación
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+        
+    // Usuarios
+    Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
         
     // Rutas de estudiantes
     Route::get('/estudiantes', [App\Http\Controllers\EstudianteController::class, 'index'])->name('estudiantes.index');

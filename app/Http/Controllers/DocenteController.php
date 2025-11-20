@@ -6,6 +6,9 @@ use App\Models\Docente;
 use App\Models\Persona;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\RolesModel;
+use Illuminate\Support\Facades\Hash;
 
 class DocenteController extends Controller
 {
@@ -68,6 +71,21 @@ class DocenteController extends Controller
                 'area'      => $data['area'] ?? null,
                 'linkedin_url' => $data['linkedin_url'] ?? null,
             ]);
+
+            // Crear/actualizar usuario y asignar rol Docente automáticamente
+            if (!empty($persona->email)) {
+                $rolDocente = RolesModel::where('nombre', 'Docente')->first();
+                $defaultPassword = 'docente123';
+                User::updateOrCreate(
+                    ['email' => $persona->email],
+                    [
+                        'name' => trim($persona->primerNombre . ' ' . $persona->primerApellido),
+                        'password' => Hash::make($defaultPassword),
+                        'roles_id' => $rolDocente ? $rolDocente->id : null,
+                        'email_verified_at' => now(),
+                    ]
+                );
+            }
         });
 
         return redirect()->route('docentes.index')->with('status', 'Docente creado correctamente.');

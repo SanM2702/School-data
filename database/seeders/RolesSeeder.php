@@ -99,7 +99,7 @@ class RolesSeeder extends Seeder
                 ]
             ],
             [
-                'nombre' => 'Profesor',
+                'nombre' => 'Docente',
                 'descripcion' => 'Docente encargado de impartir clases y evaluar estudiantes',
                 'permisos' => [
                     'ver_estudiantes',
