@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Matricula;
 use App\Models\RolesModel;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +41,18 @@ class MatriculaController extends Controller
         $matricula->estado = $data['estado'];
         $matricula->save();
 
+        Activity::create([
+            'user_id' => Auth::id(),
+            'type' => 'matricula.estado_actualizado',
+            'subject_type' => 'matricula',
+            'subject_id' => $matricula->idMatricula,
+            'description' => 'Estado de matrícula actualizado a ' . $matricula->estado,
+            'metadata' => [
+                'idEstudiante' => $matricula->idEstudiante,
+                'estado' => $matricula->estado,
+            ],
+        ]);
+
         return back()->with('success', 'Estado de matrícula actualizado.');
     }
 
@@ -60,6 +73,17 @@ class MatriculaController extends Controller
                 Storage::putFileAs($pathBase, $file, $nombre);
             }
         }
+
+        Activity::create([
+            'user_id' => Auth::id(),
+            'type' => 'matricula.documentos_subidos',
+            'subject_type' => 'matricula',
+            'subject_id' => $matricula->idMatricula,
+            'description' => 'Documentos de matrícula subidos',
+            'metadata' => [
+                'count' => $request->hasFile('documentos') ? count($request->file('documentos')) : 0,
+            ],
+        ]);
 
         return back()->with('success', 'Documentos cargados correctamente.');
     }

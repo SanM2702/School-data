@@ -27,7 +27,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('configuracion.index') }}">
                                 <i class="fas fa-cog me-1"></i>Configuración
                             </a>
                         </li>
@@ -108,12 +108,12 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_usuarios'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('usuarios.index') }}">
                                 <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios
                             </a>
                         @endif
                         @if($rol->tienePermiso('configurar_sistema'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('configuracion.index') }}">
                                 <i class="fas fa-cog me-2"></i>Configuración
                             </a>
                         @endif
@@ -121,7 +121,7 @@
                 </nav>
             </div>
         </div>
-
+        
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10 p-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
