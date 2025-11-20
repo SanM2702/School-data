@@ -93,7 +93,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('ver_reportes_generales'))
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{{ route('reportes.index') }}">
                                 <i class="fas fa-chart-bar me-2"></i>Reportes
                             </a>
                         @endif

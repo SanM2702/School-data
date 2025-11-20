@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CrearUsuario;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\DisciplinaController;
+use App\Http\Controllers\ReportesController;
 
 // Ruta raíz redirige al login
 Route::get('/', function () {
@@ -75,6 +76,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/estudiantes/documento/{noDocumento}', [App\Http\Controllers\EstudianteController::class, 'info'])->name('estudiantes.info');
     
 
+    // Reportes integrales
+    Route::get('/reportes', [ReportesController::class, 'index'])->name('reportes.index');
+    
     
     // Actualización de contacto
     Route::post('/estudiantes/{idEstudiante}/contacto', [App\Http\Controllers\EstudianteController::class, 'updateContacto'])->name('estudiantes.contacto.update');
