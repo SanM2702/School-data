@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\RolesModel;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Activity;
 
 class DocenteController extends Controller
 {
@@ -66,7 +68,7 @@ class DocenteController extends Controller
                 'estado'         => $data['estado'] ?? 'activo',
             ]);
 
-            Docente::create([
+            $docente = Docente::create([
                 'idPersona' => $persona->idPersona,
                 'area'      => $data['area'] ?? null,
                 'linkedin_url' => $data['linkedin_url'] ?? null,
@@ -86,6 +88,18 @@ class DocenteController extends Controller
                     ]
                 );
             }
+
+            Activity::create([
+                'user_id' => Auth::id(),
+                'type' => 'docente.creado',
+                'subject_type' => 'docente',
+                'subject_id' => $docente->idDocente ?? null,
+                'description' => 'Nuevo docente creado',
+                'metadata' => [
+                    'idPersona' => $persona->idPersona,
+                    'area' => $docente->area,
+                ],
+            ]);
         });
 
         return redirect()->route('docentes.index')->with('status', 'Docente creado correctamente.');

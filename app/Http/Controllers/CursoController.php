@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Curso;
 use App\Models\Estudiante;
+use App\Models\Activity;
 
 class CursoController extends Controller
 {
@@ -67,6 +68,18 @@ class CursoController extends Controller
                 Estudiante::whereIn('idEstudiante', $selected)->update(['curso_id' => $curso->idCurso]);
             }
         });
+
+        Activity::create([
+            'user_id' => Auth::id(),
+            'type' => 'curso.estudiantes_actualizados',
+            'subject_type' => 'curso',
+            'subject_id' => $curso->idCurso,
+            'description' => 'Asignaciones de estudiantes actualizadas en el curso',
+            'metadata' => [
+                'curso_id' => $curso->idCurso,
+                'total_seleccionados' => count($selected),
+            ],
+        ]);
 
         return redirect()->route('cursos.index')->with('success', 'Asignaciones de estudiantes actualizadas.');
     }

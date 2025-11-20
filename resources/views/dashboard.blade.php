@@ -27,7 +27,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('configuracion.index') }}">
                                 <i class="fas fa-cog me-1"></i>Configuración
                             </a>
                         </li>
@@ -139,11 +139,11 @@
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body text-center">
                                 <div class="text-primary mb-2">
-                                    <i class="fas fa-file-invoice fa-2x"></i>
+                                    <i class="fas fa-user-graduate fa-2x"></i>
                                 </div>
-                                <h5 class="card-title">Total Cuentas</h5>
-                                <h3 class="text-primary">0</h3>
-                                <small class="text-muted">Cuentas registradas</small>
+                                <h5 class="card-title">Total Estudiantes</h5>
+                                <h3 class="text-primary">{{ $totalEstudiantes ?? 0 }}</h3>
+                                <small class="text-muted">Estudiantes registrados</small>
                             </div>
                         </div>
                     </div>
@@ -152,11 +152,11 @@
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body text-center">
                                 <div class="text-success mb-2">
-                                    <i class="fas fa-check-circle fa-2x"></i>
+                                    <i class="fas fa-chalkboard-teacher fa-2x"></i>
                                 </div>
-                                <h5 class="card-title">Pagadas</h5>
-                                <h3 class="text-success">0</h3>
-                                <small class="text-muted">Cuentas pagadas</small>
+                                <h5 class="card-title">Total Docentes</h5>
+                                <h3 class="text-success">{{ $totalDocentes ?? 0 }}</h3>
+                                <small class="text-muted">Docentes activos</small>
                             </div>
                         </div>
                     </div>
@@ -165,11 +165,11 @@
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body text-center">
                                 <div class="text-warning mb-2">
-                                    <i class="fas fa-clock fa-2x"></i>
+                                    <i class="fas fa-layer-group fa-2x"></i>
                                 </div>
-                                <h5 class="card-title">Pendientes</h5>
-                                <h3 class="text-warning">0</h3>
-                                <small class="text-muted">Por cobrar</small>
+                                <h5 class="card-title">Total Cursos</h5>
+                                <h3 class="text-warning">{{ $totalCursos ?? 0 }}</h3>
+                                <small class="text-muted">Cursos creados</small>
                             </div>
                         </div>
                     </div>
@@ -178,11 +178,11 @@
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body text-center">
                                 <div class="text-info mb-2">
-                                    <i class="fas fa-dollar-sign fa-2x"></i>
+                                    <i class="fas fa-users fa-2x"></i>
                                 </div>
-                                <h5 class="card-title">Total Facturado</h5>
-                                <h3 class="text-info">$0</h3>
-                                <small class="text-muted">Este mes</small>
+                                <h5 class="card-title">Total Usuarios</h5>
+                                <h3 class="text-info">{{ $totalUsuarios ?? 0 }}</h3>
+                                <small class="text-muted">Usuarios del sistema</small>
                             </div>
                         </div>
                     </div>
@@ -201,7 +201,7 @@
                                 <div class="row">
                                     @if($rol && $rol->tienePermiso('gestionar_estudiantes'))
                                     <div class="col-md-4 mb-3">
-                                        <a href="#" class="btn btn-primary btn-lg w-100">
+                                        <a href="{{ route('estudiantes.nuevo') }}" class="btn btn-outline-primary btn-lg w-100">
                                             <i class="fas fa-user-plus me-2"></i>
                                             Nuevo Estudiante
                                         </a>
@@ -209,7 +209,7 @@
                                     @endif
                                     @if($rol && $rol->tienePermiso('gestionar_docentes'))
                                     <div class="col-md-4 mb-3">
-                                        <a href="#" class="btn btn-outline-primary btn-lg w-100">
+                                        <a href="{{ route('docentes.agregar') }}" class="btn btn-outline-primary btn-lg w-100">
                                             <i class="fas fa-chalkboard-teacher me-2"></i>
                                             Nuevo Docente
                                         </a>
@@ -217,7 +217,7 @@
                                     @endif
                                     @if($rol && $rol->tienePermiso('ver_reportes_generales'))
                                     <div class="col-md-4 mb-3">
-                                        <a href="#" class="btn btn-outline-primary btn-lg w-100">
+                                        <a href="{{ route('reportes.index') }}" class="btn btn-outline-primary btn-lg w-100">
                                             <i class="fas fa-chart-line me-2"></i>
                                             Ver Reportes
                                         </a>
@@ -239,11 +239,28 @@
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <div class="text-center py-4">
-                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                                    <p class="text-muted">No hay actividad reciente para mostrar.</p>
-                                    <p class="text-muted">¡Comienza creando tu primera cuenta de cobro!</p>
-                                </div>
+                                @if(isset($recentActivities) && $recentActivities->count())
+                                    <ul class="list-group list-group-flush">
+                                        @foreach($recentActivities as $act)
+                                            <li class="list-group-item d-flex align-items-start">
+                                                <div class="me-3 text-primary">
+                                                    <i class="fas fa-bolt"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-semibold">{{ $act->description }}</div>
+                                                    <div class="small text-muted">
+                                                        {{ $act->type }} · {{ optional($act->user)->name ?? 'Sistema' }} · {{ $act->created_at?->diffForHumans() }}
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">No hay actividad reciente para mostrar.</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
