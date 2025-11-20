@@ -5,20 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Docente extends Model
+class Acudiente extends Model
 {
     use HasFactory;
 
-    protected $table = 'docentes';
-    protected $primaryKey = 'idDocente';
+    protected $table = 'acudientes';
+    protected $primaryKey = 'idAcudiente';
 
     public $incrementing = true;
     protected $keyType = 'int';
 
     protected $fillable = [
         'idPersona',
-        'area',
-        'linkedin_url',
+        'parentesco',
     ];
 
     public function persona()
@@ -26,8 +25,15 @@ class Docente extends Model
         return $this->belongsTo(Persona::class, 'idPersona', 'idPersona');
     }
 
-    public function materias()
+    public function estudiantes()
     {
-        return $this->hasMany(Materia::class, 'docente_id', 'idDocente');
+        return $this->belongsToMany(
+            Estudiante::class,
+            'estudiante_acudiente',
+            'idAcudiente',
+            'idEstudiante',
+            'idAcudiente',
+            'idEstudiante'
+        );
     }
 }

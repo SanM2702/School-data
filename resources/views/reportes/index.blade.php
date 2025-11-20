@@ -125,27 +125,29 @@
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10 p-4">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <h4 class="mb-0">Reportes del Estudiante</h4>
+                <h4 class="mb-0">{{ isset($esEstudiante) && $esEstudiante ? 'Mi Reporte' : 'Reportes del Estudiante' }}</h4>
             </div>
 
-            <form method="GET" action="{{ route('reportes.index') }}" class="row g-3 mb-4">
-                <div class="col-md-8">
-                    <label for="estudiante" class="form-label">Seleccionar estudiante</label>
-                    <select name="estudiante" id="estudiante" class="form-select" required>
-                        <option value="">-- Selecciona --</option>
-                        @foreach(($listaEstudiantes ?? []) as $opt)
-                            <option value="{{ $opt['id'] }}" {{ (isset($estudiante) && $estudiante && $estudiante->idEstudiante == $opt['id']) ? 'selected' : '' }}>
-                                {{ $opt['texto'] }} @if($opt['curso']) ({{ $opt['curso'] }}) @endif
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search me-1"></i> Ver reporte
-                    </button>
-                </div>
-            </form>
+            @if(!isset($esEstudiante) || !$esEstudiante)
+                <form method="GET" action="{{ route('reportes.index') }}" class="row g-3 mb-4">
+                    <div class="col-md-8">
+                        <label for="estudiante" class="form-label">Seleccionar estudiante</label>
+                        <select name="estudiante" id="estudiante" class="form-select" required>
+                            <option value="">-- Selecciona --</option>
+                            @foreach(($listaEstudiantes ?? []) as $opt)
+                                <option value="{{ $opt['id'] }}" {{ (isset($estudiante) && $estudiante && $estudiante->idEstudiante == $opt['id']) ? 'selected' : '' }}>
+                                    {{ $opt['texto'] }} @if($opt['curso']) ({{ $opt['curso'] }}) @endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-1"></i> Ver reporte
+                        </button>
+                    </div>
+                </form>
+            @endif
 
             @if(isset($estudiante) && $estudiante)
                 <div class="card mb-4">

@@ -11,6 +11,30 @@ class MateriaController extends Controller
 {
     public function index()
     {
+        $usuario = \Illuminate\Support\Facades\Auth::user();
+        $rol = \App\Models\RolesModel::find($usuario->roles_id);
+        
+        // Si es estudiante, mostrar solo materias de su curso
+        if ($rol && $rol->nombre === 'Estudiante') {
+            $estudiante = \App\Models\Estudiante::whereHas('persona', function($query) use ($usuario) {
+                $query->where('email', $usuario->email);
+            })->with('curso')->first();
+            
+            if ($estudiante && $estudiante->curso) {
+                $materias = Materia::with(['curso', 'docente.persona'])
+                    ->where('curso_id', $estudiante->curso->idCurso)
+                    ->orderBy('nombre')
+                    ->get();
+                $cursos = Curso::where('idCurso', $estudiante->curso->idCurso)->get();
+            } else {
+                $materias = collect([]);
+                $cursos = collect([]);
+            }
+            
+            return view('materias.index', compact('materias', 'cursos'));
+        }
+        
+        // Para otros roles, mostrar todas las materias
         $query = Materia::with(['curso', 'docente.persona'])->orderBy('nombre');
         if (request('materia')) {
             $query->where('nombre', 'like', '%'.request('materia').'%');

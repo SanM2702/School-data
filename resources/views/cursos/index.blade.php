@@ -157,9 +157,11 @@
                                         @if($curso->descripcion)
                                             <p>{{ $curso->descripcion }}</p>
                                         @endif
-                                        <div class="mt-2">
-                                            <a href="{{ route('cursos.edit', $curso->idCurso) }}" class="btn btn-sm btn-warning">Editar asignaciones</a>
-                                        </div>
+                                        @if($rol && $rol->nombre !== 'Estudiante' && $rol->nombre !== 'Docente')
+                                            <div class="mt-2">
+                                                <a href="{{ route('cursos.edit', $curso->idCurso) }}" class="btn btn-sm btn-warning">Editar asignaciones</a>
+                                            </div>
+                                        @endif
                                         <h6>Estudiantes</h6>
                                         @if($curso->estudiantes && $curso->estudiantes->count())
                                             <ul class="list-group">

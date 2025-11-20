@@ -65,5 +65,16 @@ class AcudienteSeeder extends Seeder
             'idEstudiante' => $estudianteId,
             'idAcudiente'  => $acudienteId,
         ]);
+
+        // 6) Crear usuario para login
+        $rolAcudiente = \App\Models\RolesModel::where('nombre', 'Acudiente')->first();
+        if ($rolAcudiente) {
+            \App\Models\User::create([
+                'name' => 'Acudiente Demo',
+                'email' => 'acudiente.demo.' . $suffix . '@example.com',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'roles_id' => $rolAcudiente->id,
+            ]);
+        }
     }
 }

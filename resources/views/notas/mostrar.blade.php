@@ -130,9 +130,11 @@
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <h5 class="mb-0">Curso: {{ $curso->grado }}{{ $curso->grupo ? ' - '.$curso->grupo : '' }}{{ $curso->nombre ? ' - '.$curso->nombre : '' }}</h5>
-                            <div>
-                                <a href="{{ route('notas.editar', $curso) }}" class="btn btn-primary btn-sm">Editar notas</a>
-                            </div>
+                            @if($rol && $rol->nombre !== 'Estudiante' && $rol->nombre !== 'Docente' && $rol->nombre !== 'Acudiente')
+                                <div>
+                                    <a href="{{ route('notas.editar', $curso) }}" class="btn btn-primary btn-sm">Editar notas</a>
+                                </div>
+                            @endif
                         </div>
 
                         @if(($materias ?? null) && ($estudiantes ?? null) && count($materias) && count($estudiantes))

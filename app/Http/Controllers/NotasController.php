@@ -13,7 +13,26 @@ class NotasController extends Controller
 {
     public function index()
     {
-        $cursos = Curso::withCount('estudiantes')->get();
+        $usuario = \Illuminate\Support\Facades\Auth::user();
+        $rol = \App\Models\RolesModel::find($usuario->roles_id);
+        
+        // Si es estudiante, mostrar solo su curso
+        if ($rol && $rol->nombre === 'Estudiante') {
+            $estudiante = Estudiante::whereHas('persona', function($query) use ($usuario) {
+                $query->where('email', $usuario->email);
+            })->with('curso')->first();
+            
+            if ($estudiante && $estudiante->curso) {
+                $cursos = Curso::where('idCurso', $estudiante->curso->idCurso)
+                    ->withCount('estudiantes')
+                    ->get();
+            } else {
+                $cursos = collect([]);
+            }
+        } else {
+            // Para otros roles, mostrar todos los cursos
+            $cursos = Curso::withCount('estudiantes')->get();
+        }
 
         // calcular promedio por curso
         $promedios = [];
@@ -30,6 +49,41 @@ class NotasController extends Controller
 
     public function mostrar(Curso $curso)
     {
+        $usuario = \Illuminate\Support\Facades\Auth::user();
+        $rol = \App\Models\RolesModel::find($usuario->roles_id);
+
+        // Validar acceso para Estudiante
+        if ($rol && $rol->nombre === 'Estudiante') {
+             $estudiante = Estudiante::whereHas('persona', function($query) use ($usuario) {
+                $query->where('email', $usuario->email);
+            })->first();
+            
+            if (!$estudiante || $estudiante->curso_id != $curso->idCurso) {
+                 return redirect()->route('notas.index')->with('error', 'No tienes permiso para ver este curso.');
+            }
+        }
+
+        // Validar acceso para Acudiente
+        if ($rol && $rol->nombre === 'Acudiente') {
+             $acudiente = \App\Models\Acudiente::whereHas('persona', function($query) use ($usuario) {
+                $query->where('email', $usuario->email);
+            })->with('estudiantes')->first();
+            
+            $tieneAcceso = false;
+            if ($acudiente) {
+                foreach ($acudiente->estudiantes as $est) {
+                    if ($est->curso_id == $curso->idCurso) {
+                        $tieneAcceso = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!$tieneAcceso) {
+                return redirect()->route('notas.index')->with('error', 'No tienes permiso para ver este curso.');
+            }
+        }
+
         $curso->load(['estudiantes.persona', 'materias']);
         $materias = $curso->materias;
         $estudiantes = $curso->estudiantes;
