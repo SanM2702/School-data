@@ -173,10 +173,11 @@
                     <div class="col-md-4">
                         <label class="form-label">Estado</label>
                         <select name="estado" class="form-select">
-                            <option value="activo" {{ old('estado','activo')==='activo' ? 'selected' : '' }}>Activo</option>
-                            <option value="inactivo" {{ old('estado')==='inactivo' ? 'selected' : '' }}>Inactivo</option>
+                            <option value="1" {{ old('estado', 1)==1 ? 'selected' : '' }}>Activo</option>
+                            <option value="0" {{ old('estado')==0 ? 'selected' : '' }}>Inactivo</option>
                         </select>
                     </div>
+
                     <div class="col-md-4">
                         <label class="form-label">Área</label>
                         <input type="text" name="area" class="form-control" value="{{ old('area') }}" placeholder="Matemáticas, Español, etc.">
