@@ -8,6 +8,7 @@ use App\Http\Controllers\DisciplinaController;
 use App\Http\Controllers\ReportesController;
 use App\Http\Controllers\MatriculaController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\ConfiguracionController;
 
 // Ruta raíz redirige al login
 Route::get('/', function () {
@@ -26,6 +27,9 @@ Route::post('/register', [CrearUsuario::class, 'register']);
 // Rutas protegidas por autenticación
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+        
+    // Configuración
+    Route::get('/configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
         
     // Usuarios
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
