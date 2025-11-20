@@ -60,6 +60,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/disciplina/{disciplina}/editar', [DisciplinaController::class, 'edit'])->name('disciplina.editar');
     Route::put('/disciplina/{disciplina}', [DisciplinaController::class, 'update'])->name('disciplina.actualizar');
     
+    // Notas
+    Route::get('/notas', [App\Http\Controllers\NotasController::class, 'index'])->name('notas.index');
+    Route::get('/notas/curso/{curso}', [App\Http\Controllers\NotasController::class, 'mostrar'])->name('notas.mostrar');
+    Route::get('/notas/curso/{curso}/editar', [App\Http\Controllers\NotasController::class, 'editar'])->name('notas.editar');
+    Route::post('/notas/curso/{curso}', [App\Http\Controllers\NotasController::class, 'actualizar'])->name('notas.actualizar');
+    
     // Estudiantes
     Route::get('/estudiantes/{idEstudiante}', [App\Http\Controllers\EstudianteController::class, 'mostrar'])->name('estudiantes.mostrar');
     Route::get('/estudiantes/{idEstudiante}/editar', [App\Http\Controllers\EstudianteController::class, 'editar'])->name('estudiantes.editar');

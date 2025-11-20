@@ -345,6 +345,7 @@ class RolController extends Controller
                 'asignar_materias' => 'Asignar materias a docentes',
             ],
             'Académico' => [
+                'gestionar_notas' => 'Gestionar módulo de notas',
                 'registrar_notas' => 'Registrar y modificar calificaciones',
                 'ver_notas' => 'Ver calificaciones de estudiantes',
                 'aprobar_notas' => 'Aprobar calificaciones finales',

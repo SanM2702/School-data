@@ -1,25 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Editar Cursos - Colegio')
+@section('title', 'Notas - Colegio')
 
 @section('content')
-
-@php
-    $usuario = Auth::user();
-    $rol = App\Models\RolesModel::find($usuario->roles_id);
-@endphp
-
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ route('dashboard') }}">
             <i class="fas fa-file-invoice-dollar me-2"></i>Colegio
         </a>
-        
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
@@ -49,9 +41,13 @@
             </ul>
         </div>
     </div>
-</nav>
+    </nav>
 
 <div class="container-fluid">
+    @php
+        $usuario = Auth::user();
+        $rol = App\Models\RolesModel::find($usuario->roles_id);
+    @endphp
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 p-0">
@@ -75,7 +71,7 @@
                             </a>
                         @endif
                         @if($rol->tienePermiso('gestionar_cursos'))
-                            <a class="nav-link active" href="{{ route('cursos.index') }}">
+                            <a class="nav-link" href="{{ route('cursos.index') }}">
                                 <i class="fas fa-layer-group me-2"></i>Cursos
                             </a>
                         @endif
@@ -87,6 +83,11 @@
                         @if($rol->tienePermiso('gestionar_disciplina'))
                             <a class="nav-link" href="{{ route('disciplina.index') }}">
                                 <i class="fas fa-gavel me-2"></i>Disciplina
+                            </a>
+                        @endif
+                        @if($rol->tienePermiso('gestionar_notas'))
+                            <a class="nav-link active" href="{{ route('notas.index') }}">
+                                <i class="fas fa-book me-2"></i>Notas
                             </a>
                         @endif
                         @if($rol->tienePermiso('ver_reportes_generales'))
@@ -122,31 +123,62 @@
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="main-content p-4">
-                @php
-                    $display = $curso->grado ?? $curso->nombre;
-                    if (!empty($curso->grupo)) { $display .= ' ' . $curso->grupo; }
-                @endphp
-                <h3>Editar asignaciones - {{ $display }}</h3>
-                <form method="POST" action="{{ route('cursos.update', $curso->idCurso) }}">
-                    @csrf
-                    @method('PUT')
-
-                    <div class="mb-3">
-                        <label for="estudiantes">Estudiantes (marcar los que pertenecen al curso)</label>
-                        <select name="estudiantes[]" id="estudiantes" class="form-select" multiple size="10">
-                            @foreach($estudiantes as $est)
-                                @php
-                                    $p = $est->persona;
-                                    $label = $p ? ($p->primerNombre . ' ' . ($p->primerApellido ?? '')) : 'Sin persona';
-                                    $selected = $curso->estudiantes->contains('idEstudiante', $est->idEstudiante);
-                                @endphp
-                                <option value="{{ $est->idEstudiante }}" {{ $selected ? 'selected' : '' }}>{{ $label }} (ID: {{ $est->idEstudiante }})</option>
-                            @endforeach
-                        </select>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h3 class="mb-0">Editar Notas</h3>
+                    <div>
+                        <a href="{{ route('notas.mostrar', $curso) }}" class="btn btn-outline-secondary btn-sm">Volver al detalle</a>
                     </div>
-                    <button class="btn btn-primary">Guardar asignaciones</button>
-                    <a href="{{ route('cursos.index') }}" class="btn btn-secondary">Cancelar</a>
-                </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="mb-3">Curso: {{ $curso->grado }}{{ $curso->grupo ? ' - '.$curso->grupo : '' }}{{ $curso->nombre ? ' - '.$curso->nombre : '' }}</h5>
+
+                        @if(($materias ?? null) && ($estudiantes ?? null) && count($materias) && count($estudiantes))
+                            <form method="POST" action="{{ route('notas.actualizar', $curso) }}">
+                                @csrf
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Estudiante</th>
+                                                @foreach($materias as $materia)
+                                                    <th class="text-center">{{ $materia->nombre }}</th>
+                                                @endforeach
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($estudiantes as $est)
+                                                <tr>
+                                                    <td>
+                                                        {{ $est->persona->primerNombre ?? '' }} {{ $est->persona->segundoNombre ?? '' }} {{ $est->persona->primerApellido ?? '' }} {{ $est->persona->segundoApellido ?? '' }}
+                                                    </td>
+                                                    @foreach($materias as $materia)
+                                                        <td class="text-center" style="max-width:120px;">
+                                                            <input type="number" step="0.01" min="0" max="5" class="form-control form-control-sm text-center"
+                                                                name="notas[{{ $est->idEstudiante }}][{{ $materia->idMateria }}]"
+                                                                value="{{ $notaMap[$est->idEstudiante][$materia->idMateria] ?? '' }}"
+                                                                placeholder="-">
+                                                        </td>
+                                                    @endforeach
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted">Deja vacío para eliminar la nota. Escala permitida: 0.00 a 5.00</small>
+                                    <div>
+                                        <a href="{{ route('notas.mostrar', $curso) }}" class="btn btn-outline-secondary">Cancelar</a>
+                                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                    </div>
+                                </div>
+                            </form>
+                        @else
+                            <p class="text-muted mb-0">No hay estudiantes o materias asignadas a este curso.</p>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -157,3 +189,4 @@
     @csrf
 </form>
 @endsection
+

@@ -87,6 +87,11 @@
                                 <i class="fas fa-gavel me-2"></i>Disciplina
                             </a>
                         @endif
+                        @if($rol->tienePermiso('gestionar_notas'))
+                            <a class="nav-link" href="{{ route('notas.index') }}">
+                                <i class="fas fa-book me-2"></i>Notas
+                            </a>
+                        @endif
                         @if($rol->tienePermiso('ver_reportes_generales'))
                             <a class="nav-link" href="#">
                                 <i class="fas fa-chart-bar me-2"></i>Reportes

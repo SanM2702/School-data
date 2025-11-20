@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard - Colegio')
+@section('title', 'Agregar Materias - Colegio')
 
 @section('content')
 <!-- Navbar -->

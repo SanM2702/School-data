@@ -6,6 +6,8 @@
     $rol = App\Models\RolesModel::find($usuario->roles_id);
 @endphp
 
+@section('title', 'Agregar Docente - Colegio')
+
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
