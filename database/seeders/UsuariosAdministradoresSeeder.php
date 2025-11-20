@@ -48,15 +48,58 @@ class UsuariosAdministradoresSeeder extends Seeder
             ]
         );
 
+        // Crear Coordinador Académico
+        $rolCoordAcad = RolesModel::where('nombre', 'CoordinadorAcademico')->first();
+        if ($rolCoordAcad) {
+            User::updateOrCreate(
+                ['email' => 'coordinador.academico@colegio.edu.co'],
+                [
+                    'name' => 'Coordinador Académico',
+                    'email' => 'coordinador.academico@colegio.edu.co',
+                    'password' => Hash::make('academico123'),
+                    'roles_id' => $rolCoordAcad->id,
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
+
+        // Crear Coordinador de Convivencia
+        $rolCoordDisc = RolesModel::where('nombre', 'CoordinadorDisciplina')->first();
+        if ($rolCoordDisc) {
+            User::updateOrCreate(
+                ['email' => 'coordinador.convivencia@colegio.edu.co'],
+                [
+                    'name' => 'Coordinador de Convivencia',
+                    'email' => 'coordinador.convivencia@colegio.edu.co',
+                    'password' => Hash::make('convivencia123'),
+                    'roles_id' => $rolCoordDisc->id,
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
+
+        // Crear Tesorería
+        $rolTesoreria = RolesModel::where('nombre', 'Tesoreria')->first();
+        if ($rolTesoreria) {
+            User::updateOrCreate(
+                ['email' => 'tesoreria@colegio.edu.co'],
+                [
+                    'name' => 'Tesorería',
+                    'email' => 'tesoreria@colegio.edu.co',
+                    'password' => Hash::make('tesoreria123'),
+                    'roles_id' => $rolTesoreria->id,
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
+
         $this->command->info('✓ Usuarios administradores creados exitosamente:');
         $this->command->newLine();
-        $this->command->info('ADMINISTRADOR:');
-        $this->command->info('  Email: admin@colegio.edu.co');
-        $this->command->info('  Contraseña: admin123');
-        $this->command->newLine();
-        $this->command->info('RECTOR:');
-        $this->command->info('  Email: rector@colegio.edu.co');
-        $this->command->info('  Contraseña: rector123');
+        $this->command->info('ADMINISTRADOR: admin@colegio.edu.co / admin123');
+        $this->command->info('RECTOR: rector@colegio.edu.co / rector123');
+        $this->command->info('COORD. ACADÉMICO: coordinador.academico@colegio.edu.co / academico123');
+        $this->command->info('COORD. CONVIVENCIA: coordinador.convivencia@colegio.edu.co / convivencia123');
+        $this->command->info('TESORERÍA: tesoreria@colegio.edu.co / tesoreria123');
         $this->command->newLine();
         $this->command->warn('⚠ IMPORTANTE: Cambia estas contraseñas después del primer login por seguridad.');
     }

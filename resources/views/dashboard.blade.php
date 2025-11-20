@@ -135,57 +135,353 @@
 
                 <!-- Statistics Cards -->
                 <div class="row mb-4">
-                    <div class="col-md-3 mb-3">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <div class="text-primary mb-2">
-                                    <i class="fas fa-user-graduate fa-2x"></i>
+                    @if($rol && $rol->nombre === 'Estudiante')
+                        <!-- Tarjetas para Estudiantes -->
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-primary mb-2">
+                                        <i class="fas fa-graduation-cap fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Mi Curso</h5>
+                                    <h3 class="text-primary">{{ $cursoEstudiante->nombre ?? 'N/A' }}</h3>
+                                    <small class="text-muted">{{ $cursoEstudiante->grado ?? '' }} {{ $cursoEstudiante->grupo ?? '' }}</small>
                                 </div>
-                                <h5 class="card-title">Total Estudiantes</h5>
-                                <h3 class="text-primary">{{ $totalEstudiantes ?? 0 }}</h3>
-                                <small class="text-muted">Estudiantes registrados</small>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="col-md-3 mb-3">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <div class="text-success mb-2">
-                                    <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-success mb-2">
+                                        <i class="fas fa-star fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Mejores Notas</h5>
+                                    @if($mejoresNotas && $mejoresNotas->count() > 0)
+                                        @foreach($mejoresNotas as $nota)
+                                            <div class="mb-2">
+                                                <h5 class="text-success mb-0">{{ $nota->valor }}</h5>
+                                                <small class="text-muted">{{ $nota->materia->nombre ?? 'N/A' }}</small>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <h3 class="text-muted">-</h3>
+                                        <small class="text-muted">Sin notas registradas</small>
+                                    @endif
                                 </div>
-                                <h5 class="card-title">Total Docentes</h5>
-                                <h3 class="text-success">{{ $totalDocentes ?? 0 }}</h3>
-                                <small class="text-muted">Docentes activos</small>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="col-md-3 mb-3">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <div class="text-warning mb-2">
-                                    <i class="fas fa-layer-group fa-2x"></i>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-danger mb-2">
+                                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Faltas Disciplinarias</h5>
+                                    <h3 class="text-danger">{{ $cantidadFaltas ?? 0 }}</h3>
+                                    <small class="text-muted">Registros disciplinarios</small>
                                 </div>
-                                <h5 class="card-title">Total Cursos</h5>
-                                <h3 class="text-warning">{{ $totalCursos ?? 0 }}</h3>
-                                <small class="text-muted">Cursos creados</small>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="col-md-3 mb-3">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-body text-center">
-                                <div class="text-info mb-2">
-                                    <i class="fas fa-users fa-2x"></i>
+                    @elseif($rol && $rol->nombre === 'Docente')
+                        <!-- Tarjetas para Docentes -->
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-primary mb-2">
+                                        <i class="fas fa-layer-group fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Mis Cursos</h5>
+                                    <h3 class="text-primary">{{ $numeroCursos ?? 0 }}</h3>
+                                    <small class="text-muted">Cursos asignados</small>
                                 </div>
-                                <h5 class="card-title">Total Usuarios</h5>
-                                <h3 class="text-info">{{ $totalUsuarios ?? 0 }}</h3>
-                                <small class="text-muted">Usuarios del sistema</small>
                             </div>
                         </div>
-                    </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-success mb-2">
+                                        <i class="fas fa-user-graduate fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Mis Estudiantes</h5>
+                                    <h3 class="text-success">{{ $numeroEstudiantes ?? 0 }}</h3>
+                                    <small class="text-muted">Total de estudiantes</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-warning mb-2">
+                                        <i class="fas fa-gavel fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Sanciones Registradas</h5>
+                                    <h3 class="text-warning">{{ $cantidadSanciones ?? 0 }}</h3>
+                                    <small class="text-muted">Disciplinas reportadas</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-info mb-2">
+                                        <i class="fas fa-book-open fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Áreas Asignadas</h5>
+                                    <h3 class="text-info">{{ $numeroAreas ?? 0 }}</h3>
+                                    <small class="text-muted">{{ $docenteData->area ?? 'Sin área' }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($rol && $rol->nombre === 'Acudiente')
+                        <!-- Tarjetas para Acudientes -->
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-success mb-2">
+                                        <i class="fas fa-star fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Mejor Nota</h5>
+                                    @if($mejorNotaAcudiente)
+                                        <h3 class="text-success">{{ $mejorNotaAcudiente->valor }}</h3>
+                                        <small class="text-muted">{{ $mejorNotaAcudiente->materia->nombre ?? 'N/A' }}</small>
+                                    @else
+                                        <h3 class="text-muted">-</h3>
+                                        <small class="text-muted">Sin notas</small>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-primary mb-2">
+                                        <i class="fas fa-graduation-cap fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Curso del Estudiante</h5>
+                                    <h3 class="text-primary">{{ $cursoAcudiente->nombre ?? 'N/A' }}</h3>
+                                    <small class="text-muted">{{ $cursoAcudiente->grado ?? '' }} {{ $cursoAcudiente->grupo ?? '' }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-danger mb-2">
+                                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Faltas Disciplinarias</h5>
+                                    <h3 class="text-danger">{{ $faltasAcudiente ?? 0 }}</h3>
+                                    <small class="text-muted">Registros disciplinarios</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-warning mb-2">
+                                        <i class="fas fa-file-invoice fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Estado de Matrícula</h5>
+                                    <h3 class="text-warning">{{ $estadoMatricula ?? 'Sin matrícula' }}</h3>
+                                    <small class="text-muted">Estado actual</small>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($rol && $rol->nombre === 'CoordinadorDisciplina')
+                        <!-- Tarjetas para Coordinador de Disciplina -->
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-primary mb-2">
+                                        <i class="fas fa-user-graduate fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Estudiantes</h5>
+                                    <h3 class="text-primary">{{ $totalEstudiantesCoord ?? 0 }}</h3>
+                                    <small class="text-muted">Estudiantes registrados</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-danger mb-2">
+                                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Faltas</h5>
+                                    <h3 class="text-danger">{{ $totalFaltasCoord ?? 0 }}</h3>
+                                    <small class="text-muted">Casos disciplinarios</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-warning mb-2">
+                                        <i class="fas fa-layer-group fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Cursos</h5>
+                                    <h3 class="text-warning">{{ $totalCursosCoord ?? 0 }}</h3>
+                                    <small class="text-muted">Cursos activos</small>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($rol && $rol->nombre === 'CoordinadorAcademico')
+                        <!-- Tarjetas para Coordinador Académico -->
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-primary mb-2">
+                                        <i class="fas fa-user-graduate fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Estudiantes</h5>
+                                    <h3 class="text-primary">{{ $totalEstudiantesAcad ?? 0 }}</h3>
+                                    <small class="text-muted">Estudiantes registrados</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-success mb-2">
+                                        <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Docentes</h5>
+                                    <h3 class="text-success">{{ $totalDocentesAcad ?? 0 }}</h3>
+                                    <small class="text-muted">Docentes activos</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-warning mb-2">
+                                        <i class="fas fa-layer-group fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Cursos</h5>
+                                    <h3 class="text-warning">{{ $totalCursosAcad ?? 0 }}</h3>
+                                    <small class="text-muted">Cursos activos</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-info mb-2">
+                                        <i class="fas fa-book fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Materias</h5>
+                                    <h3 class="text-info">{{ $totalMateriasAcad ?? 0 }}</h3>
+                                    <small class="text-muted">Materias registradas</small>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($rol && $rol->nombre === 'Tesoreria')
+                        <!-- Tarjetas para Tesorería -->
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-primary mb-2">
+                                        <i class="fas fa-user-graduate fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Estudiantes</h5>
+                                    <h3 class="text-primary">{{ $totalEstudiantes ?? 0 }}</h3>
+                                    <small class="text-muted">Estudiantes registrados</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-info mb-2">
+                                        <i class="fas fa-users fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Usuarios</h5>
+                                    <h3 class="text-info">{{ $totalUsuarios ?? 0 }}</h3>
+                                    <small class="text-muted">Usuarios del sistema</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-warning mb-2">
+                                        <i class="fas fa-layer-group fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Cursos</h5>
+                                    <h3 class="text-warning">{{ $totalCursos ?? 0 }}</h3>
+                                    <small class="text-muted">Cursos activos</small>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <!-- Tarjetas para Administradores y otros roles -->
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-primary mb-2">
+                                        <i class="fas fa-user-graduate fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Estudiantes</h5>
+                                    <h3 class="text-primary">{{ $totalEstudiantes ?? 0 }}</h3>
+                                    <small class="text-muted">Estudiantes registrados</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-success mb-2">
+                                        <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Docentes</h5>
+                                    <h3 class="text-success">{{ $totalDocentes ?? 0 }}</h3>
+                                    <small class="text-muted">Docentes activos</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-warning mb-2">
+                                        <i class="fas fa-layer-group fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Cursos</h5>
+                                    <h3 class="text-warning">{{ $totalCursos ?? 0 }}</h3>
+                                    <small class="text-muted">Cursos creados</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-info mb-2">
+                                        <i class="fas fa-users fa-2x"></i>
+                                    </div>
+                                    <h5 class="card-title">Total Usuarios</h5>
+                                    <h3 class="text-info">{{ $totalUsuarios ?? 0 }}</h3>
+                                    <small class="text-muted">Usuarios del sistema</small>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Quick Actions -->
@@ -199,29 +495,152 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    @if($rol && $rol->tienePermiso('gestionar_estudiantes'))
-                                    <div class="col-md-4 mb-3">
-                                        <a href="{{ route('estudiantes.nuevo') }}" class="btn btn-outline-primary btn-lg w-100">
-                                            <i class="fas fa-user-plus me-2"></i>
-                                            Nuevo Estudiante
-                                        </a>
-                                    </div>
-                                    @endif
-                                    @if($rol && $rol->tienePermiso('gestionar_docentes'))
-                                    <div class="col-md-4 mb-3">
-                                        <a href="{{ route('docentes.agregar') }}" class="btn btn-outline-primary btn-lg w-100">
-                                            <i class="fas fa-chalkboard-teacher me-2"></i>
-                                            Nuevo Docente
-                                        </a>
-                                    </div>
-                                    @endif
-                                    @if($rol && $rol->tienePermiso('ver_reportes_generales'))
-                                    <div class="col-md-4 mb-3">
-                                        <a href="{{ route('reportes.index') }}" class="btn btn-outline-primary btn-lg w-100">
-                                            <i class="fas fa-chart-line me-2"></i>
-                                            Ver Reportes
-                                        </a>
-                                    </div>
+                                    @if($rol && $rol->nombre === 'Estudiante')
+                                        <!-- Acciones rápidas para Estudiantes -->
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('cursos.index') }}" class="btn btn-outline-primary btn-lg w-100">
+                                                <i class="fas fa-graduation-cap me-2"></i>
+                                                Ver Mi Curso
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('notas.index') }}" class="btn btn-outline-success btn-lg w-100">
+                                                <i class="fas fa-book me-2"></i>
+                                                Ver Mis Notas
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('reportes.index') }}" class="btn btn-outline-info btn-lg w-100">
+                                                <i class="fas fa-chart-line me-2"></i>
+                                                Ver Reportes
+                                            </a>
+                                        </div>
+                                    @elseif($rol && $rol->nombre === 'Docente')
+                                        <!-- Acciones rápidas para Docentes -->
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('notas.index') }}" class="btn btn-outline-success btn-lg w-100">
+                                                <i class="fas fa-book me-2"></i>
+                                                Ver Notas
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('reportes.index') }}" class="btn btn-outline-info btn-lg w-100">
+                                                <i class="fas fa-chart-line me-2"></i>
+                                                Ver Reportes
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('configuracion.index') }}" class="btn btn-outline-warning btn-lg w-100">
+                                                <i class="fas fa-cog me-2"></i>
+                                                Configuración
+                                            </a>
+                                        </div>
+                                    @elseif($rol && $rol->nombre === 'Acudiente')
+                                        <!-- Acciones rápidas para Acudientes -->
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('notas.index') }}" class="btn btn-outline-success btn-lg w-100">
+                                                <i class="fas fa-book me-2"></i>
+                                                Notas del Estudiante
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('reportes.index') }}" class="btn btn-outline-info btn-lg w-100">
+                                                <i class="fas fa-chart-line me-2"></i>
+                                                Ver Reportes
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('matriculas.index') }}" class="btn btn-outline-warning btn-lg w-100">
+                                                <i class="fas fa-file-invoice me-2"></i>
+                                                Ver Matrículas
+                                            </a>
+                                        </div>
+                                    @elseif($rol && $rol->nombre === 'CoordinadorDisciplina')
+                                        <!-- Acciones rápidas para Coordinador de Disciplina -->
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('disciplina.agregar') }}" class="btn btn-outline-danger btn-lg w-100">
+                                                <i class="fas fa-gavel me-2"></i>
+                                                Nueva Sanción
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('reportes.index') }}" class="btn btn-outline-info btn-lg w-100">
+                                                <i class="fas fa-chart-line me-2"></i>
+                                                Reportes
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('disciplina.index') }}" class="btn btn-outline-warning btn-lg w-100">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                Disciplina
+                                            </a>
+                                        </div>
+                                    @elseif($rol && $rol->nombre === 'CoordinadorAcademico')
+                                        <!-- Acciones rápidas para Coordinador Académico -->
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('cursos.index') }}" class="btn btn-outline-primary btn-lg w-100">
+                                                <i class="fas fa-layer-group me-2"></i>
+                                                Cursos
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('materias.index') }}" class="btn btn-outline-success btn-lg w-100">
+                                                <i class="fas fa-book me-2"></i>
+                                                Materias
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('notas.index') }}" class="btn btn-outline-info btn-lg w-100">
+                                                <i class="fas fa-graduation-cap me-2"></i>
+                                                Notas
+                                            </a>
+                                        </div>
+                                    @elseif($rol && $rol->nombre === 'Tesoreria')
+                                        <!-- Acciones rápidas para Tesorería -->
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('matriculas.index') }}" class="btn btn-outline-primary btn-lg w-100">
+                                                <i class="fas fa-file-invoice-dollar me-2"></i>
+                                                Matrículas
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('usuarios.index') }}" class="btn btn-outline-info btn-lg w-100">
+                                                <i class="fas fa-users-cog me-2"></i>
+                                                Gestión de Usuarios
+                                            </a>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('configuracion') }}" class="btn btn-outline-secondary btn-lg w-100">
+                                                <i class="fas fa-cogs me-2"></i>
+                                                Configuración
+                                            </a>
+                                        </div>
+                                    @else
+                                        <!-- Acciones rápidas para Administradores y otros roles -->
+                                        @if($rol && $rol->tienePermiso('gestionar_estudiantes'))
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('estudiantes.nuevo') }}" class="btn btn-outline-primary btn-lg w-100">
+                                                <i class="fas fa-user-plus me-2"></i>
+                                                Nuevo Estudiante
+                                            </a>
+                                        </div>
+                                        @endif
+                                        @if($rol && $rol->tienePermiso('gestionar_docentes'))
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('docentes.agregar') }}" class="btn btn-outline-primary btn-lg w-100">
+                                                <i class="fas fa-chalkboard-teacher me-2"></i>
+                                                Nuevo Docente
+                                            </a>
+                                        </div>
+                                        @endif
+                                        @if($rol && $rol->tienePermiso('ver_reportes_generales'))
+                                        <div class="col-md-4 mb-3">
+                                            <a href="{{ route('reportes.index') }}" class="btn btn-outline-primary btn-lg w-100">
+                                                <i class="fas fa-chart-line me-2"></i>
+                                                Ver Reportes
+                                            </a>
+                                        </div>
+                                        @endif
                                     @endif
                                 </div>
                             </div>

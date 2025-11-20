@@ -46,9 +46,11 @@ class RolesSeeder extends Seeder
                     'matricular_estudiantes',
                     'asignar_materias',
                     'aprobar_notas',
+                    'gestionar_notas',
                     'gestionar_horarios',
                     'gestionar_periodos',
                     'aprobar_sanciones',
+                    'gestionar_disciplina',
                     'enviar_comunicados',
                     'ver_reportes_generales',
                     'ver_reportes_academicos',
@@ -59,7 +61,8 @@ class RolesSeeder extends Seeder
                     'gestionar_pagos',
                     'configurar_pensiones',
                     'gestionar_materias',
-                    'gestionar_cursos'
+                    'gestionar_cursos',
+                    'configurar_sistema'
                 ]
             ],
             [
@@ -105,17 +108,23 @@ class RolesSeeder extends Seeder
                     'ver_estudiantes',
                     'registrar_notas',
                     'ver_notas',
+                    'gestionar_notas',
                     'crear_actividades',
                     'ver_horarios',
                     'gestionar_asistencia',
                     'comunicarse_acudientes',
                     'enviar_comunicados',
                     'ver_reportes_academicos',
+                    'ver_reportes_generales',
                     'generar_reportes',
                     'ver_perfil_propio',
                     'editar_perfil_propio',
                     'cambiar_contrasena',
-                    'ver_notificaciones'
+                    'ver_notificaciones',
+                    'gestionar_cursos',
+                    'gestionar_materias',
+                    'gestionar_disciplina',
+                    'configurar_sistema'
                 ]
             ],
             [
@@ -129,7 +138,13 @@ class RolesSeeder extends Seeder
                     'ver_perfil_propio',
                     'editar_perfil_propio',
                     'cambiar_contrasena',
-                    'ver_notificaciones'
+                    'ver_notificaciones',
+                    'ver_curso_propio',
+                    'gestionar_cursos',
+                    'gestionar_materias',
+                    'gestionar_notas',
+                    'ver_reportes_generales',
+                    'configurar_sistema'
                 ]
             ],
             [
@@ -142,6 +157,7 @@ class RolesSeeder extends Seeder
                     'ver_historial_academico',
                     'comunicarse_docentes',
                     'ver_reportes_academicos',
+                    'ver_reportes_generales',
                     'ver_reportes_disciplinarios',
                     'justificar_inasistencias',
                     'ver_comunicados',
@@ -149,7 +165,12 @@ class RolesSeeder extends Seeder
                     'ver_perfil_propio',
                     'editar_perfil_propio',
                     'cambiar_contrasena',
-                    'ver_notificaciones'
+                    'ver_notificaciones',
+                    'gestionar_cursos',
+                    'gestionar_materias',
+                    'gestionar_notas',
+                    'matricular_estudiantes',
+                    'configurar_sistema'
                 ]
             ],
             [
@@ -159,7 +180,10 @@ class RolesSeeder extends Seeder
                     'cambiar_estado_matricula',
                     'gestionar_pagos',
                     'ver_pagos',
-                    'ver_reportes_financieros'
+                    'ver_reportes_financieros',
+                    'gestionar_usuarios',
+                    'configurar_sistema',
+                    'matricular_estudiantes'
                 ]
             ],
         ];

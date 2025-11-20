@@ -125,23 +125,25 @@
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10">
             <div class="p-4">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
-                    <h4 class="mb-0">Materias</h4>
-                    <div class="d-flex gap-2 align-items-center">
-                        <form method="GET" action="{{ route('materias.index') }}" class="d-flex gap-2">
-                            <input type="text" name="materia" class="form-control form-control-sm" placeholder="Filtrar por materia" value="{{ request('materia') }}" />
-                            <button class="btn btn-sm btn-outline-primary" type="submit">
-                                <i class="fas fa-search me-1"></i>Filtrar
-                            </button>
-                            @if(request('materia'))
-                                <a href="{{ route('materias.index') }}" class="btn btn-sm btn-outline-secondary">Limpiar</a>
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+                        <h4 class="mb-0">Materias</h4>
+                        <div class="d-flex gap-2 align-items-center">
+                            <form method="GET" action="{{ route('materias.index') }}" class="d-flex gap-2">
+                                <input type="text" name="materia" class="form-control form-control-sm" placeholder="Filtrar por materia" value="{{ request('materia') }}" />
+                                <button class="btn btn-sm btn-outline-primary" type="submit">
+                                    <i class="fas fa-search me-1"></i>Filtrar
+                                </button>
+                                @if(request('materia'))
+                                    <a href="{{ route('materias.index') }}" class="btn btn-sm btn-outline-secondary">Limpiar</a>
+                                @endif
+                            </form>
+                            @if($rol && $rol->nombre !== 'Estudiante' && $rol->nombre !== 'Docente' && $rol->nombre !== 'Acudiente')
+                                <a href="{{ route('materias.agregar') }}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-plus me-1"></i>Agregar materia
+                                </a>
                             @endif
-                        </form>
-                        <a href="{{ route('materias.agregar') }}" class="btn btn-sm btn-success">
-                            <i class="fas fa-plus me-1"></i>Agregar materia
-                        </a>
+                        </div>
                     </div>
-                </div>
 
                 @if(session('status'))
                     <div class="alert alert-success">{{ session('status') }}</div>
@@ -174,18 +176,22 @@
                                                 @endif
                                             </td>
                                             <td class="text-end">
-                                                <div class="d-inline-flex gap-1">
-                                                    <a href="{{ route('materias.editar', $materia->idMateria) }}" class="btn btn-sm btn-primary" title="Editar" aria-label="Editar">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <form action="{{ route('materias.eliminar', $materia->idMateria) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta materia?');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar" aria-label="Eliminar">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
+                                                @if($rol && $rol->nombre !== 'Estudiante' && $rol->nombre !== 'Docente' && $rol->nombre !== 'Acudiente')
+                                                    <div class="d-inline-flex gap-1">
+                                                        <a href="{{ route('materias.editar', $materia->idMateria) }}" class="btn btn-sm btn-primary" title="Editar" aria-label="Editar">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <form action="{{ route('materias.eliminar', $materia->idMateria) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta materia?');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-sm btn-danger" title="Eliminar" aria-label="Eliminar">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @empty

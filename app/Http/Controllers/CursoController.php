@@ -13,15 +13,53 @@ class CursoController extends Controller
     /**
      * Mostrar listado de cursos (index).
      */
-    public function index()
+    public function index(Request $request)
     {
-        $usuario = Auth::user();
-        // Filtro único por grado (nombre del curso)
-        $grado = request('grado');
-
-        // Listado de grados disponibles
+        $usuario = \Illuminate\Support\Facades\Auth::user();
+        $rol = \App\Models\RolesModel::find($usuario->roles_id);
+        
+        // Si es estudiante, mostrar solo su curso
+        if ($rol && $rol->nombre === 'Estudiante') {
+            $estudiante = Estudiante::whereHas('persona', function($query) use ($usuario) {
+                $query->where('email', $usuario->email);
+            })->with('curso.estudiantes.persona')->first();
+            
+            if ($estudiante && $estudiante->curso) {
+                $cursos = collect([$estudiante->curso]);
+            } else {
+                $cursos = collect([]);
+            }
+            
+            $grados = [];
+            return view('cursos.index', compact('cursos', 'grados'));
+        }
+        
+        // Si es acudiente, mostrar solo el curso de su estudiante
+        if ($rol && $rol->nombre === 'Acudiente') {
+            $acudiente = \App\Models\Acudiente::whereHas('persona', function($query) use ($usuario) {
+                $query->where('email', $usuario->email);
+            })->with('estudiantes.curso.estudiantes.persona')->first();
+            
+            if ($acudiente && $acudiente->estudiantes->count() > 0) {
+                $estudiante = $acudiente->estudiantes->first();
+                if ($estudiante->curso) {
+                    $cursos = collect([$estudiante->curso]);
+                } else {
+                    $cursos = collect([]);
+                }
+            } else {
+                $cursos = collect([]);
+            }
+            
+            $grados = [];
+            return view('cursos.index', compact('cursos', 'grados'));
+        }
+        
+        // Para otros roles, mostrar todos los cursos o filtrados
+        $grado = $request->input('grado');
+        
         $grados = Curso::query()->whereNotNull('grado')->distinct()->orderBy('grado')->pluck('grado');
-
+        
         // Construir consulta de cursos a mostrar según filtro
         $cursosQuery = Curso::with(['estudiantes.persona']);
         if ($grado) {
@@ -29,7 +67,7 @@ class CursoController extends Controller
         }
         $cursos = $cursosQuery->get();
 
-        return view('cursos.index', compact('usuario', 'cursos', 'grados', 'grado'));
+        return view('cursos.index', compact('cursos', 'grados', 'grado'));
     }
 
     public function edit($id)

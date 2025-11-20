@@ -13,6 +13,132 @@ class ReportesController extends Controller
 {
     public function index(Request $request)
     {
+        $usuario = \Illuminate\Support\Facades\Auth::user();
+        $rol = \App\Models\RolesModel::find($usuario->roles_id);
+        
+        // Si es estudiante, mostrar solo su propio reporte
+        if ($rol && $rol->nombre === 'Estudiante') {
+            $estudiante = Estudiante::whereHas('persona', function($query) use ($usuario) {
+                $query->where('email', $usuario->email);
+            })->with(['persona', 'curso'])->first();
+            
+            if (!$estudiante) {
+                return view('reportes.index', [
+                    'listaEstudiantes' => collect([]),
+                    'estudiante' => null,
+                    'disciplinas' => collect(),
+                    'materias' => collect(),
+                    'resumenFaltas' => ['total' => 0, 'por_tipo' => [], 'por_estado' => [], 'ultima_falta' => null],
+                    'resumenNotas' => ['promedio' => null, 'por_materia' => []],
+                    'esEstudiante' => true,
+                ]);
+            }
+            
+            // Cargar datos del estudiante
+            $disciplinas = Disciplina::where('estudiante_id', $estudiante->idEstudiante)
+                ->orderByDesc('fecha')
+                ->get();
+
+            $notas = Nota::with('materia')
+                ->where('estudiante_id', $estudiante->idEstudiante)
+                ->get();
+
+            $curso = $estudiante->curso;
+            $materias = collect();
+            if ($curso) {
+                $materias = $curso->materias()->get();
+            }
+
+            // Resumen de faltas
+            $resumenFaltas = [
+                'total' => $disciplinas->count(),
+                'por_tipo' => $disciplinas->groupBy('tipo_falta')->map->count()->toArray(),
+                'por_estado' => $disciplinas->groupBy('estado')->map->count()->toArray(),
+                'ultima_falta' => $disciplinas->sortByDesc('fecha')->first()?->fecha,
+            ];
+
+            // Resumen de notas
+            $resumenNotas = [
+                'promedio' => $notas->avg('valor'),
+                'por_materia' => $notas->groupBy('materia_id')->map(function ($notasMateria) {
+                    return $notasMateria->avg('valor');
+                }),
+            ];
+            
+            return view('reportes.index', [
+                'listaEstudiantes' => collect([$estudiante]),
+                'estudiante' => $estudiante,
+                'disciplinas' => $disciplinas,
+                'materias' => $materias,
+                'resumenFaltas' => $resumenFaltas,
+                'resumenNotas' => $resumenNotas,
+                'esEstudiante' => true,
+            ]);
+        }
+
+        // Si es acudiente, mostrar solo el reporte de su estudiante
+        if ($rol && $rol->nombre === 'Acudiente') {
+            $acudiente = \App\Models\Acudiente::whereHas('persona', function($query) use ($usuario) {
+                $query->where('email', $usuario->email);
+            })->with('estudiantes.persona', 'estudiantes.curso')->first();
+            
+            if ($acudiente && $acudiente->estudiantes->count() > 0) {
+                $estudiante = $acudiente->estudiantes->first();
+                
+                // Cargar datos del estudiante
+                $disciplinas = Disciplina::where('estudiante_id', $estudiante->idEstudiante)
+                    ->orderByDesc('fecha')
+                    ->get();
+
+                $notas = Nota::with('materia')
+                    ->where('estudiante_id', $estudiante->idEstudiante)
+                    ->get();
+
+                $curso = $estudiante->curso;
+                $materias = collect();
+                if ($curso) {
+                    $materias = $curso->materias()->get();
+                }
+
+                // Resumen de faltas
+                $resumenFaltas = [
+                    'total' => $disciplinas->count(),
+                    'por_tipo' => $disciplinas->groupBy('tipo_falta')->map->count()->toArray(),
+                    'por_estado' => $disciplinas->groupBy('estado')->map->count()->toArray(),
+                    'ultima_falta' => $disciplinas->sortByDesc('fecha')->first()?->fecha,
+                ];
+
+                // Resumen de notas
+                $resumenNotas = [
+                    'promedio' => $notas->avg('valor'),
+                    'por_materia' => $notas->groupBy('materia_id')->map(function ($notasMateria) {
+                        return $notasMateria->avg('valor');
+                    }),
+                ];
+
+                return view('reportes.index', [
+                    'listaEstudiantes' => collect([$estudiante]),
+                    'estudiante' => $estudiante,
+                    'disciplinas' => $disciplinas,
+                    'materias' => $materias,
+                    'resumenFaltas' => $resumenFaltas,
+                    'resumenNotas' => $resumenNotas,
+                    'esEstudiante' => true, // Para ocultar selectores
+                ]);
+            } else {
+                return view('reportes.index', [
+                    'listaEstudiantes' => collect([]),
+                    'estudiante' => null,
+                    'disciplinas' => collect(),
+                    'materias' => collect(),
+                    'resumenFaltas' => ['total' => 0, 'por_tipo' => [], 'por_estado' => [], 'ultima_falta' => null],
+                    'resumenNotas' => ['promedio' => null, 'por_materia' => []],
+                    'esEstudiante' => true,
+                ]);
+            }
+        }
+        
+        // Para otros roles, mostrar selector de estudiantes
         $estudiantes = Estudiante::with(['persona','curso'])->get();
 
         $selectedId = $request->has('estudiante') ? (int) $request->input('estudiante') : null;
@@ -82,6 +208,7 @@ class ReportesController extends Controller
             'materias' => $materias,
             'resumenFaltas' => $resumenFaltas,
             'resumenNotas' => $resumenNotas,
+            'esEstudiante' => false,
         ]);
     }
 }
